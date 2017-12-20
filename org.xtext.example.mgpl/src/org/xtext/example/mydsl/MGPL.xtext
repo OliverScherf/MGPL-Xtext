@@ -1,0 +1,63 @@
+grammar org.xtext.example.mydsl.MGPL with org.eclipse.xtext.common.Terminals
+
+generate mGPL "http://www.xtext.org/example/mydsl/MGPL"
+
+Prog :
+	 'game' name=ID '(' attrAssList=AttrAssList?  ')' decls+=Decl* stmtBlock=StmtBlock blocks+=Block* ';';
+	 
+Decl :
+	VarDecl ';'  | ObjDecl ';';
+	
+VarDecl :
+	'int' name=ID init=Init? | 'int' name=ID '[' value=INT ']';
+	
+Init :
+	'=' Expr;
+	
+ObjDecl :
+	ObjType name=ID '(' attrAssList=AttrAssList? ')' | ObjType name=ID '[' value=INT ']';
+	
+ObjType :
+	'rectangle' | 'triangle' | 'circle';
+	
+AttrAssList : 
+	AttrAss ',' attrAssList=AttrAssList | AttrAss;
+	
+AttrAss :
+	name=ID '=' expr=Expr;
+	
+Block :
+	AnimBlock | EventBlock;
+	
+AnimBlock :
+	'animation' name=ID '(' ObjType objName=ID ')' stmtBlock=StmtBlock;
+
+EventBlock :
+	'on' keyStroke=KEYSTROKE stmtBlock=StmtBlock;
+	
+terminal KEYSTROKE :
+	'space' | 'leftarrow' | 'rightarrow' | 'uparrow' | 'downarrow';
+	
+StmtBlock :
+	{StmtBlock} '{' stmts+=Stmt* '}';
+	
+Stmt :
+	IfStmt | ForStmt | AssStmt;
+	
+IfStmt :
+	'if' '(' Expr ')' ifStmtBlock=StmtBlock '(' 'else' elseStmtBlock=StmtBlock ')'?;
+	
+ForStmt :
+	'for' '(' initAssStmt=AssStmt ';' expr=Expr ';' afterthoughAssStmt=AssStmt ')' stmtBlock=StmtBlock;
+	
+AssStmt :
+	var=Var '=' expr=Expr;
+	
+Var :
+	name=ID | name=ID '[' expr=Expr ']' | objName=ID '.' objProp=ID | objArray=ID '[' expr=Expr ']' '.' objProp=ID;
+
+Expr :
+	{Expr} (var=Var?) | value=INT | var1=Var 'touches' var2=Var | '-' Expr | '!' Expr | '(' Expr ')'| lhs=Expr op=OP rhs=Expr ;
+
+terminal OP:
+	'||' | '&&' | '==' | '<' | '<=' | '+' | '-' | '*' | '/';

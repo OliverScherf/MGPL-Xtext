@@ -3,7 +3,7 @@ grammar org.xtext.example.mydsl.MGPL with org.eclipse.xtext.common.Terminals
 generate mGPL "http://www.xtext.org/example/mydsl/MGPL"
 
 Prog :
-	 'game' name=ID '(' attrAssList=AttrAssList?  ')' decls+=Decl* stmtBlock=StmtBlock blocks+=Block* ';';
+	 'game' name=ID '(' attrAssList=AttrAssList?  ')' decls+=Decl* stmtBlock=StmtBlock blocks+=Block*;
 	 
 Decl :
 	VarDecl ';'  | ObjDecl ';';
@@ -43,10 +43,11 @@ StmtBlock :
 	{StmtBlock} '{' stmts+=Stmt* '}';
 	
 Stmt :
-	IfStmt | ForStmt | AssStmt;
+	IfStmt | ForStmt | AssStmt ';'
+;
 	
 IfStmt :
-	'if' '(' Expr ')' ifStmtBlock=StmtBlock '(' 'else' elseStmtBlock=StmtBlock ')'?;
+	'if' '(' Expr ')' ifStmtBlock=StmtBlock ('else' elseStmtBlock=StmtBlock)?;
 	
 ForStmt :
 	'for' '(' initAssStmt=AssStmt ';' expr=Expr ';' afterthoughAssStmt=AssStmt ')' stmtBlock=StmtBlock;
@@ -84,7 +85,7 @@ RelExpr :
 ;
 
 AddExpr :
-	muls += MulExpr ((ADD | MINUS) muls+= MulExpr)*
+	muls += MulExpr ((ADD | '-') muls+= MulExpr)*
 ;
 
 MulExpr :
@@ -92,7 +93,7 @@ MulExpr :
 ;
 
 UnExpr :
-	UN? atom = AtomExpr
+	(UN | '-')? atom = AtomExpr
 ;
 
 AtomExpr:
@@ -108,10 +109,6 @@ terminal ADD:
 	'+' 
 ;
 
-terminal MINUS: 
-	'-' 
-;
-
 terminal MUL: 
 	'*' 
 ;
@@ -122,6 +119,6 @@ terminal DIV:
 
 
 terminal UN:
-	'-' | '!';
+	'!';
 	
 	

@@ -10,13 +10,13 @@ import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.xtext.example.mydsl.mGPL.Model
+import org.xtext.example.mydsl.mGPL.Prog
 
 @RunWith(XtextRunner)
 @InjectWith(MGPLInjectorProvider)
 class MGPLParsingTest {
 	@Inject
-	ParseHelper<Model> parseHelper
+	ParseHelper<Prog> parseHelper
 	
 	@Test
 	def void loadModel() {

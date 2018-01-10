@@ -21,8 +21,14 @@ ObjType :
 	'rectangle' | 'triangle' | 'circle';
 	
 AttrAssList : 
-	AttrAss ',' attrAssList=AttrAssList | AttrAss;
+	test=AttrAss attrAssList += AttrAssList2
+;
+
+AttrAssList2:
+	{AttrAssList} (',' attrAssListEntry=AttrAssList)?
+;
 	
+
 AttrAss :
 	name=ID '=' expr=Expr;
 	
@@ -52,12 +58,75 @@ ForStmt :
 	
 AssStmt :
 	var=Var '=' expr=Expr;
-	
-Var :
+
+OrigVar :
 	name=ID | name=ID '[' expr=Expr ']' | objName=ID '.' objProp=ID | objArray=ID '[' expr=Expr ']' '.' objProp=ID;
 
-Expr :
-	{Expr} (var=Var?) | value=INT | var1=Var 'touches' var2=Var | '-' Expr | '!' Expr | '(' Expr ')'| lhs=Expr op=OP rhs=Expr ;
+Var :
+	name=ID todo=Var2?;
 
-terminal OP:
-	'||' | '&&' | '==' | '<' | '<=' | '+' | '-' | '*' | '/';
+Var2:
+	'.' objProp=ID | '[' expr=Expr ']' todo=Var3?
+;
+
+Var3:
+	'.' objProp=ID	
+;
+
+Expr :
+	OrExpr ;
+
+OrExpr :
+	conjs += AndExpr ('||' conjs +=AndExpr)* 
+;
+
+AndExpr :
+	rels += RelExpr ('&&' rels += RelExpr)*
+;
+
+RelExpr :
+	adds += AddExpr (RELS adds+= AddExpr)*
+;
+
+AddExpr :
+	muls += MulExpr ((ADD | MINUS) muls+= MulExpr)*
+;
+
+MulExpr :
+	uns += UnExpr ((MUL | DIV) uns+= UnExpr)*
+;
+
+UnExpr :
+	UN? atom = AtomExpr
+;
+
+AtomExpr:
+	var=Var ('touches' var2=Var)? | value=INT | '(' Expr ')'
+;
+
+
+terminal RELS: 
+	'==' | '<' | '<='
+;
+
+terminal ADD: 
+	'+' 
+;
+
+terminal MINUS: 
+	'-' 
+;
+
+terminal MUL: 
+	'*' 
+;
+
+terminal DIV: 
+	'/' 
+;
+
+
+terminal UN:
+	'-' | '!';
+	
+	

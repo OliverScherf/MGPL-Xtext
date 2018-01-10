@@ -24,15 +24,12 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="attrAssList" eType="#//AttrAssList"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AttrAssList" eSuperTypes="#//AttrAssList2">
+  <eClassifiers xsi:type="ecore:EClass" name="AttrAssList">
     <eStructuralFeatures xsi:type="ecore:EReference" name="test" eType="#//AttrAss"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attrAssList" upperBound="-1"
-        eType="#//AttrAssList2" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attrAssListEntry" eType="#//AttrAssList"
-        containment="true"/>
+        eType="#//AttrAssList" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AttrAssList2"/>
   <eClassifiers xsi:type="ecore:EClass" name="AttrAss">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="expr" eType="#//Expr" containment="true"/>

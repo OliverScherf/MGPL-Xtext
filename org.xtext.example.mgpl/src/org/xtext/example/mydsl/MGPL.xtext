@@ -21,13 +21,8 @@ ObjType :
 	'rectangle' | 'triangle' | 'circle';
 	
 AttrAssList : 
-	test=AttrAss attrAssList += AttrAssList2
+	test=AttrAss (',' attrAssList += AttrAssList)?
 ;
-
-AttrAssList2:
-	{AttrAssList} (',' attrAssListEntry=AttrAssList)?
-;
-	
 
 AttrAss :
 	name=ID '=' expr=Expr;

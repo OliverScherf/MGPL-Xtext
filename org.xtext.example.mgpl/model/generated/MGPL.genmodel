@@ -27,9 +27,7 @@
     <genClasses ecoreClass="MGPL.ecore#//AttrAssList">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MGPL.ecore#//AttrAssList/test"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MGPL.ecore#//AttrAssList/attrAssList"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MGPL.ecore#//AttrAssList/attrAssListEntry"/>
     </genClasses>
-    <genClasses ecoreClass="MGPL.ecore#//AttrAssList2"/>
     <genClasses ecoreClass="MGPL.ecore#//AttrAss">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute MGPL.ecore#//AttrAss/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MGPL.ecore#//AttrAss/expr"/>

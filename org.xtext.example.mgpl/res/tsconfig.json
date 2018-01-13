@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "rootDir": "src",
+        "outDir": "dist",
+        "module": "es6",
+        "removeComments": true,
+        "sourcemap": true,
+        "strict": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
+}

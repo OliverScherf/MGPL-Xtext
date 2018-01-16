@@ -1,5 +1,5 @@
 import Ball from "./Ball.js";
-import Rectangle from "./rectangle.js";
+import Rectangle from "./Rectangle.js";
 
 enum KeyBindings {
     UP = 38,

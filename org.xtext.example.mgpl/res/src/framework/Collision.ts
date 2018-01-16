@@ -1,5 +1,5 @@
 import Ball from "./Ball.js";
-import Rectangle from "./rectangle.js";
+import Rectangle from "./Rectangle.js";
 
 export function touches(ball: Ball, player: Rectangle): boolean {
     const playerRightEdge = player.x + player.width;

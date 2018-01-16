@@ -1,6 +1,6 @@
 import Game from "./framework/Game.js";
 import Ball from "./framework/Ball.js";
-import Rectangle from "./framework/rectangle.js";
+import Rectangle from "./framework/Rectangle.js";
 import { touches } from "./framework/Collision.js";
 
 enum Pong {

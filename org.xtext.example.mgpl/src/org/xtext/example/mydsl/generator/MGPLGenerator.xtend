@@ -34,10 +34,10 @@ class MGPLGenerator extends AbstractGenerator {
 	
 	def generateProg(Prog p) {
 		'''
-		import Game from "./framework/Game.js";
-		import Ball from "./framework/Ball.js";
-		import Rectangle from "./framework/Rectangle.js";
-		import { touches } from "./framework/Collision.js";
+		import Game from "./framework/Game.ts";
+		import Ball from "./framework/Ball.ts";
+		import Rectangle from "./framework/Rectangle.ts";
+		import { touches } from "./framework/Collision.ts";
 		
 		var «np.variableName(p)»
 		

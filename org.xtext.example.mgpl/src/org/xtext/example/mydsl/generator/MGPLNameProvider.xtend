@@ -12,6 +12,6 @@ class MGPLNameProvider {
 	 * TODO
 	 */
 	def resolveExpression(Expr e) {
-		return e.orExpr.toString
+		return "";
 	}
 }

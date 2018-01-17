@@ -10,3 +10,7 @@ build/
 *.xtendbin
 org.eclipse.buildship.core.prefs
 .DS_Store
+
+org\.xtext\.example\.mgpl\.ui/plugin\.xml_gen
+
+org\.xtext\.example\.mgpl/model/generated/

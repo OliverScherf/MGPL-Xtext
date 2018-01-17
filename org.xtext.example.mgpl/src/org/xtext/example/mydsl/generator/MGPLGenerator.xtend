@@ -8,7 +8,7 @@ import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
 import org.xtext.example.mydsl.mGPL.Prog
-import org.xtext.example.mydsl.mGPL.Var
+import org.xtext.example.mydsl.mGPL.impl.ProgImpl
 
 /**
  * Generates code from your model files on save.
@@ -24,12 +24,28 @@ class MGPLGenerator extends AbstractGenerator {
 	 * animations in update Funktion generieren (callback an Framework)
 	 */
 
+	MGPLNameProvider np = new MGPLNameProvider
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		fsa.generateFile('greetings.txt', 'People to greet: ' + 
-			resource.allContents
-				.filter(Prog)
-				.map[it.dec]
-				.join(', '))
+		val prog = resource.allContents.head as Prog
+		val code = generateProg(prog)
+		fsa.generateFile("output.js", code)
+	}
+	
+	def generateProg(Prog p) {
+		'''
+		import Game from "./framework/Game.js";
+		import Ball from "./framework/Ball.js";
+		import Rectangle from "./framework/Rectangle.js";
+		import { touches } from "./framework/Collision.js";
+		
+		var «np.variableName(p)»
+		
+		(function («np.variableName(p)» {
+			«FOR attr : p.attrAssList.attrAssList»
+				«np.variableName(p)»[«np.variableName(p)»["«attr.attrAss.name»"] = «np.resolveExpression(attr.attrAss.expr)»] = "«attr.attrAss.name»";
+			«ENDFOR»
+		}
+		'''
 	}
 }

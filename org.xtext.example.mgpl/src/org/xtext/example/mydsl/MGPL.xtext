@@ -7,35 +7,35 @@ Prog :
 	 'game' name=ID '(' attrAssList=AttrAssList?  ')' decls+=Decl* stmtBlock=StmtBlock blocks+=Block*;
 	 
 Decl :
-	VarDecl ';'  | ObjDecl ';';
+	varDecl=VarDecl ';'  | ObjDecl ';';
 	
 VarDecl :
-	'int' name=ID init=Init? | 'int' name=ID '[' value=INT ']';
+	type='int' name=ID initVal=Init? | type='int' name=ID '[' value=INT ']';
 	
 Init :
-	'=' Expr;
+	'=' expr=Expr;
 	
 ObjDecl :
-	ObjType name=ID '(' attrAssList=AttrAssList? ')' | ObjType name=ID '[' value=INT ']';
+	type=ObjType name=ID '(' attrAssList=AttrAssList? ')' | type=ObjType name=ID '[' arrSize=INT ']';
 	
 ObjType :
 	'rectangle' | 'triangle' | 'circle';
 	
 AttrAssList : 
-	test=AttrAss (',' attrAssList += AttrAssList)?
+	attrAss=AttrAss (',' attrAssList += AttrAssList)?
 ;
 
 AttrAss :
 	name=ID '=' expr=Expr;
 	
 Block :
-	AnimBlock | EventBlock;
+	animBlock=AnimBlock | eventBlock=EventBlock;
 	
 AnimBlock :
-	'animation' name=ID '(' ObjType objName=ID ')' stmtBlock=StmtBlock;
+	'animation' name=ID '(' objType=ObjType objName=ID ')' stmtBlock=StmtBlock;
 
 EventBlock :
-	'on' keyStroke=KEYSTROKE stmtBlock=StmtBlock;
+	'on' keyEvent=KEYSTROKE stmtBlock=StmtBlock;
 	
 terminal KEYSTROKE :
 	'space' | 'leftarrow' | 'rightarrow' | 'uparrow' | 'downarrow';
@@ -44,34 +44,31 @@ StmtBlock :
 	{StmtBlock} '{' stmts+=Stmt* '}';
 	
 Stmt :
-	IfStmt | ForStmt | AssStmt ';'
+	ifStmt=IfStmt | forStmt=ForStmt | assStmt=AssStmt ';'
 ;
 	
 IfStmt :
-	'if' '(' Expr ')' ifStmtBlock=StmtBlock ('else' elseStmtBlock=StmtBlock)?;
+	'if' '(' cond=Expr ')' trueStmtBlock=StmtBlock ('else' falseStmtBlock=StmtBlock)?;
 	
 ForStmt :
-	'for' '(' initAssStmt=AssStmt ';' expr=Expr ';' afterthoughAssStmt=AssStmt ')' stmtBlock=StmtBlock;
+	'for' '(' initAssStmt=AssStmt ';' cond=Expr ';' afterthoughAssStmt=AssStmt ')' stmtBlock=StmtBlock;
 	
 AssStmt :
 	var=Var '=' expr=Expr;
 
-OrigVar :
-	name=ID | name=ID '[' expr=Expr ']' | objName=ID '.' objProp=ID | objArray=ID '[' expr=Expr ']' '.' objProp=ID;
-
 Var :
-	name=ID todo=Var2?;
+	name=ID (varProp=VarProp | varArray=VarArray)?;
 
-Var2:
-	'.' objProp=ID | '[' expr=Expr ']' todo=Var3?
+VarProp:
+	'.' objProp=ID 
 ;
 
-Var3:
-	'.' objProp=ID	
+VarArray:
+	'[' indexExpr=Expr ']' varProp=VarProp?
 ;
 
 Expr :
-	OrExpr ;
+	orExpr=OrExpr;
 
 OrExpr :
 	conjs += AndExpr ('||' conjs +=AndExpr)* 
@@ -98,7 +95,7 @@ UnExpr :
 ;
 
 AtomExpr:
-	var=Var ('touches' var2=Var)? | value=INT | '(' Expr ')'
+	rhsVar=Var ('touches' lhsVar=Var)? | value=INT | '(' expr=Expr ')'
 ;
 
 

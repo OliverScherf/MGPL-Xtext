@@ -67,40 +67,63 @@ VarArray:
 	'[' indexExpr=Expr ']' varProp=VarProp?
 ;
 
+
 Expr :
-	orExpr=OrExpr;
-
-OrExpr :
-	conjs += AndExpr ('||' conjs +=AndExpr)* 
+	AndExpr ({Operation.left=current} op=OR right += AndExpr)* 
 ;
 
-AndExpr :
-	rels += RelExpr ('&&' rels += RelExpr)*
+AndExpr returns Expr:
+	RelExpr ({Operation.left=current} op=AND right += RelExpr)*
 ;
 
-RelExpr :
-	adds += AddExpr (RELS adds+= AddExpr)*
+RelExpr returns Expr:
+	AddExpr ({Operation.left=current} op=RELS right += AddExpr)*
 ;
 
-AddExpr :
-	muls += MulExpr ((ADD | '-') muls+= MulExpr)*
+AddExpr returns Expr:
+	MulExpr ({Operation.left=current} op=(ADD | Minus) right += MulExpr)*
 ;
 
-MulExpr :
-	uns += UnExpr ((MUL | DIV) uns+= UnExpr)*
+MulExpr returns Expr:
+	UnExpr ({Operation.left=current}  op=(MUL | DIV) right += UnExpr)*
 ;
 
-UnExpr :
-	(UN | '-')? atom = AtomExpr
-;
+UnExpr returns Expr: 
+  {Expr} ({Operation.left=current} op=(NOT | Minus))? atom = AtomExpr 
+ ;
 
-AtomExpr:
+AtomExpr returns Expr:
 	rhsVar=Var ('touches' lhsVar=Var)? | value=INT | '(' expr=Expr ')'
 ;
 
 
-terminal RELS: 
-	'==' | '<' | '<='
+// No terminal, context is needed to differ unary operations from add operations
+Minus:
+	'-'
+;
+
+terminal AND: 
+	'&&' 
+;
+
+terminal OR: 
+	'||'
+;
+
+terminal LT: 
+	'<' 
+;
+
+terminal LE: 
+	'<='
+;
+
+terminal RELS:
+	AND | LT | LE	
+;
+
+terminal EQ: 
+	'=='
 ;
 
 terminal ADD: 
@@ -115,8 +138,7 @@ terminal DIV:
 	'/' 
 ;
 
-
-terminal UN:
+terminal NOT:
 	'!';
 	
 	

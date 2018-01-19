@@ -1,6 +1,7 @@
 import Game from "./framework/Game.js";
 import Ball from "./framework/Ball.js";
-import Rectangle from "./framework/Rectangle.js";
+import Rectangle from "./framework/rectangle.js";
+import Triangle from "./framework/Triangle.js";
 import { touches } from "./framework/Collision.js";
 
 enum Pong {
@@ -60,7 +61,9 @@ game.registerKeyEvent('DOWN', () => {
     }
 });
 
-game.init([paddle, ball]);
+
+const gun = new Triangle(250, 50, 25, 12);
+game.init([paddle, ball, gun]);
 
 
 

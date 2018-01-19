@@ -1,12 +1,16 @@
 import Ball from "./Ball.js";
 import Rectangle from "./Rectangle.js";
+import Triangle from "./Triangle.js";
 
 enum KeyBindings {
     UP = 38,
-    DOWN = 40
+    DOWN = 40,
+    LEFT = 37,
+    RIGHT = 39,
+    SPACE = 32
 }
 
-type GameObject = Ball | Rectangle
+type GameObject = Ball | Rectangle | Triangle
 
 export default class Game {
     private canvas: HTMLCanvasElement;
@@ -17,10 +21,13 @@ export default class Game {
     private renderables: GameObject[];
     private onArrowDown: () => void;
     private onArrowUp: () => void;
+    private keyEvents: {[index:string] : () => void};
 
     constructor(width: number, height: number) {
         this.width = width;
         this.height = height;
+        this.keyEvents = {};
+        this.keyPressed = [];
     }
 
     private createWorld() {
@@ -29,7 +36,6 @@ export default class Game {
         document.body.appendChild(this.canvas);
         this.canvas.height = this.height;
         this.canvas.width = this.width;
-        this.keyPressed = [];
         this.renderables = [];
     }
 
@@ -38,6 +44,10 @@ export default class Game {
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height); 
     }
 
+    public registerKeyEvent(keyType: string, callback: () => void ) {
+        console.log(this.keyEvents);
+        this.keyEvents[keyType] = callback;
+    }
     public registerOnArrowDown(onArrowDown: () => void){
        this.onArrowDown = onArrowDown;
     }
@@ -47,12 +57,11 @@ export default class Game {
 
     // gameloop
     private gameLoop(){
-        if(this.keyPressed[KeyBindings.UP]) {
-            this.onArrowUp();
-        }
-        if(this.keyPressed[KeyBindings.DOWN]) {
-            this.onArrowDown();
-        }
+        this.keyPressed.forEach((itemStatus, index) => {
+            if(itemStatus) {
+                this.keyEvents[KeyBindings[index]]();
+            }
+        });
 
         // update moveables
         this.renderables.forEach(item => {

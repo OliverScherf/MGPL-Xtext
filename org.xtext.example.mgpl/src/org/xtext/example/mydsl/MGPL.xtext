@@ -85,11 +85,10 @@ MulExpr returns Expression:
 UnExpr returns Expression:
 	op=(NOT | Minus)? atom=Atom;
 	
-Atom returns Expression:
+Atom :
 	{IntLiteral} value=INT |
-	{TouchedVar} var=Var ('touches' touched=Var)? |
+	var=Var ({Operation.left=current} op='touches' touches += Var)? |
 	{ExprVar} '(' expr=Expr ')';
-
 
 // No terminal, context is needed to differ unary operations from add operations
 Minus:

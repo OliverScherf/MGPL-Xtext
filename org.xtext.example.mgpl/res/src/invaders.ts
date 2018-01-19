@@ -1,8 +1,8 @@
 import Game from "./framework/Game.js";
-import Ball from "./framework/Ball.js";
 import Rectangle from "./framework/rectangle.js";
 import Triangle from "./framework/Triangle.js";
 import { touches } from "./framework/Collision.js";
+import Circle from "./framework/Circle.js";
 
 enum Pong {
     width = 400, 
@@ -19,11 +19,14 @@ const ball_size: number = 10;
 
 const game: Game = new Game(Pong.width, Pong.height);
 
+//create gun
+const gun = new Triangle(250, 50, 25, 12);
+
 // create paddle
 const paddle: Rectangle = new Rectangle(Pong.width / 10, Pong.height /2, paddle_width, paddle_height);
 
 // specify callback for ball
-const animation = (cur_ball: Ball) => {
+const animation = (cur_ball: Circle) => {
     	// if ball has reached either the left or right, reverse its direction
 	if  (cur_ball.x < 0  &&  ball_x_increment < 0 || Pong.width - ball_size < cur_ball.x  && 0 < ball_x_increment) {
         ball_x_increment = -ball_x_increment;
@@ -45,24 +48,22 @@ const animation = (cur_ball: Ball) => {
 }
 
 // create ball with callback
-const ball:Ball = new Ball(Pong.width / 2, Pong.height / 2, ball_size / 2, animation);
+const ball:Circle = new Circle(Pong.width / 2, Pong.height / 2, ball_size / 2, animation);
 
 // register up () => {}
-game.registerKeyEvent('UP', () => {
+game.registerKeyEvent('LEFT', () => {
     if (paddle_increment < paddle.y) {
         paddle.y = paddle.y -paddle_increment;
     }
 });
 
 // register down () => {}
-game.registerKeyEvent('DOWN', () => {
+game.registerKeyEvent('RIGHT', () => {
     if (paddle.y < Pong.height - 2*paddle_increment) {
         paddle.y = paddle.y + paddle_increment;
     }
 });
 
-
-const gun = new Triangle(250, 50, 25, 12);
 game.init([paddle, ball, gun]);
 
 

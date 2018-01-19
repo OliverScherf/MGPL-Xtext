@@ -1,6 +1,7 @@
-import Ball from "./Ball.js";
+import Circle from "./Circle.js";
 import Rectangle from "./Rectangle.js";
 import Triangle from "./Triangle.js";
+import {instanceOfIMoveable} from "./IMoveable.js";
 
 enum KeyBindings {
     UP = 38,
@@ -10,7 +11,7 @@ enum KeyBindings {
     SPACE = 32
 }
 
-type GameObject = Ball | Rectangle | Triangle
+type GameObject = Circle | Rectangle | Triangle
 
 export default class Game {
     private canvas: HTMLCanvasElement;
@@ -65,8 +66,8 @@ export default class Game {
 
         // update moveables
         this.renderables.forEach(item => {
-            if (item instanceof Ball) {
-                item.move();   
+            if(instanceOfIMoveable(item)) {
+                item.move();
             }
         });
 

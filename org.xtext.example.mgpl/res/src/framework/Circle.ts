@@ -1,15 +1,20 @@
 import Shape2D from "./Shape2D.js";
 import IMoveable from "./IMoveable.js";
+import {Boundaries} from "./Types.js";
 
 export default class Circle extends Shape2D implements IMoveable {
 
     public radius: number;
-    handleMove: (c:Circle) => void
+
+    static produce() {
+        return new Circle(0, 0, 0, () => {});
+    }
+    animate: (c:Circle) => void
 
     constructor(x: number, y:number, radius: number, handler: (b: Circle) => void) {
         super(x,y);
         this.radius = radius;
-        this.handleMove = handler;
+        this.animate = handler;
     }
 
     static color: string = 'red';
@@ -22,6 +27,15 @@ export default class Circle extends Shape2D implements IMoveable {
     }
 
     public move() {
-        this.handleMove(this);
+        this.animate(this);
+    }
+
+    getBoundaries(): Boundaries {
+        return {
+            x: this.x,
+            y: this.y,
+            height: this.radius,
+            width: this.radius
+        }
     }
 }

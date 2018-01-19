@@ -22,7 +22,7 @@ ObjType :
 	'rectangle' | 'triangle' | 'circle';
 	
 AttrAssList : 
-	attrAss=AttrAss (',' attrAssList += AttrAssList)?
+	attrAss += AttrAss (',' attrAss += AttrAss)*
 ;
 
 AttrAss :

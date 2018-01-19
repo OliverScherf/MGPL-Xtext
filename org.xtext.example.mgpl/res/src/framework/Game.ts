@@ -1,7 +1,8 @@
 import Circle from "./Circle.js";
 import Rectangle from "./Rectangle.js";
 import Triangle from "./Triangle.js";
-import {instanceOfIMoveable} from "./IMoveable.js";
+import { instanceOfIMoveable } from "./IMoveable.js";
+import Shape2D from "./Shape2D.js";
 
 enum KeyBindings {
     UP = 38,
@@ -11,15 +12,13 @@ enum KeyBindings {
     SPACE = 32
 }
 
-type GameObject = Circle | Rectangle | Triangle
-
 export default class Game {
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
     private width: number = window.innerWidth;
     private height: number = window.innerHeight;
     private keyPressed: boolean[];
-    private renderables: GameObject[];
+    private renderables: Shape2D[];
     private onArrowDown: () => void;
     private onArrowUp: () => void;
     private keyEvents: {[index:string] : () => void};
@@ -73,7 +72,11 @@ export default class Game {
 
         // paint ball & rectangle
         this.paintBackground();
-        this.renderables.forEach(renderable => renderable.render(this.canvas, this.context));
+        this.renderables.
+            filter(item => item.visible === 1)
+            .forEach(renderable => renderable.render(this.canvas, this.context));
+        
+        // continue game loop
         requestAnimationFrame(() => this.gameLoop());
     }
 
@@ -87,7 +90,7 @@ export default class Game {
          });
     }
 
-    public init(renderables: GameObject[]) {
+    public init(renderables: Shape2D[]) {
         this.createWorld();
         this.setupKeyListener();
         this.renderables = renderables;

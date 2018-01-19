@@ -1,7 +1,7 @@
 import Game from "./framework/Game.js";
-import Ball from "./framework/Ball.js";
 import Rectangle from "./framework/Rectangle.js";
-import { touches } from "./framework/Collision.js";
+import { touches2 } from "./framework/Collision.js";
+import Circle from "./framework/Circle";
 
 enum Pong {
     width = 400, 
@@ -22,7 +22,7 @@ const game: Game = new Game(Pong.width, Pong.height);
 const paddle: Rectangle = new Rectangle(Pong.width / 10, Pong.height /2, paddle_width, paddle_height);
 
 // specify callback for ball
-const animation = (cur_ball: Ball) => {
+const animation = (cur_ball: Circle) => {
     	// if ball has reached either the left or right, reverse its direction
 	if  (cur_ball.x < 0  &&  ball_x_increment < 0 || Pong.width - ball_size < cur_ball.x  && 0 < ball_x_increment) {
         ball_x_increment = -ball_x_increment;
@@ -34,7 +34,7 @@ const animation = (cur_ball: Ball) => {
     }
 
     // if ball touches the paddle, reverse its direction
-    if (touches(cur_ball, paddle)) {
+    if (touches2(cur_ball, paddle)) {
         ball_x_increment = -ball_x_increment;
     }
  
@@ -44,7 +44,7 @@ const animation = (cur_ball: Ball) => {
 }
 
 // create ball with callback
-const ball:Ball = new Ball(Pong.width / 2, Pong.height / 2, ball_size / 2, animation);
+const ball:Circle = new Circle(Pong.width / 2, Pong.height / 2, ball_size / 2, animation);
 
 // register up () => {}
 game.registerKeyEvent('UP', () => {

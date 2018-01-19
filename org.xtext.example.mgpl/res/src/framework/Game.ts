@@ -58,7 +58,7 @@ export default class Game {
     // gameloop
     private gameLoop(){
         this.keyPressed.forEach((itemStatus, index) => {
-            if(itemStatus) {
+            if(itemStatus && this.keyEvents[KeyBindings[index]]) {
                 this.keyEvents[KeyBindings[index]]();
             }
         });

@@ -67,34 +67,28 @@ VarArray:
 	'[' indexExpr=Expr ']' varProp=VarProp?
 ;
 
+Expr returns Expression:
+	ConjExpr ({Operation.left=current} op=OR right=ConjExpr)*;
 
-Expr :
-	AndExpr ({Operation.left=current} op=OR right += AndExpr)* 
-;
+ConjExpr returns Expression:
+	RelExpr ({Operation.left=current} op=AND right=RelExpr)*;
 
-AndExpr returns Expr:
-	RelExpr ({Operation.left=current} op=AND right += RelExpr)*
-;
+RelExpr returns Expression:
+	AddExpr ({Operation.left=current} op=RELS right=AddExpr)*;
 
-RelExpr returns Expr:
-	AddExpr ({Operation.left=current} op=RELS right += AddExpr)*
-;
+AddExpr returns Expression:
+	MulExpr ({Operation.left=current} op=(ADD | Minus) right=MulExpr)*;
 
-AddExpr returns Expr:
-	MulExpr ({Operation.left=current} op=(ADD | Minus) right += MulExpr)*
-;
+MulExpr returns Expression:
+	UnExpr ({Operation.left=current} op=(MUL | DIV) right=UnExpr)*;
 
-MulExpr returns Expr:
-	UnExpr ({Operation.left=current}  op=(MUL | DIV) right += UnExpr)*
-;
-
-UnExpr returns Expr: 
-  {Expr} ({Operation.left=current} op=(NOT | Minus))? atom = AtomExpr 
- ;
-
-AtomExpr returns Expr:
-	rhsVar=Var ('touches' lhsVar=Var)? | value=INT | '(' expr=Expr ')'
-;
+UnExpr returns Expression:
+	op=(NOT | Minus)? atom=Atom;
+	
+Atom returns Expression:
+	{IntLiteral} value=INT |
+	{TouchedVar} var=Var ('touches' touched=Var)? |
+	{ExprVar} '(' expr=Expr ')';
 
 
 // No terminal, context is needed to differ unary operations from add operations

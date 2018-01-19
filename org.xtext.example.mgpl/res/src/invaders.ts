@@ -1,7 +1,7 @@
 import Game from "./framework/Game.js";
 import Rectangle from "./framework/rectangle.js";
 import Triangle from "./framework/Triangle.js";
-import { touches, touches2 } from "./framework/Collision.js";
+import { touches } from "./framework/Collision.js";
 import Circle from "./framework/Circle.js";
 import {arrayOfN} from "./framework/Util.js";
 
@@ -65,7 +65,7 @@ const bullet_animate = (cur_bullet: Rectangle) => {
     {
 	for (i = 0; i < 10; i = i+1)
 	{
-	   if (aliens[i].visible  && touches2(cur_bullet, aliens[i]))
+	   if (aliens[i].visible  && touches(cur_bullet, aliens[i]))
 	      { aliens[i].visible = 0;
 		   cur_bullet.visible = 0;}     
       }

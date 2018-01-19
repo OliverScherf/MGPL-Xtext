@@ -1,7 +1,7 @@
 import Game from "./framework/Game.js";
 import Rectangle from "./framework/Rectangle.js";
-import { touches2 } from "./framework/Collision.js";
-import Circle from "./framework/Circle";
+import { touches } from "./framework/Collision.js";
+import Circle from "./framework/Circle.js";
 
 enum Pong {
     width = 400, 
@@ -34,7 +34,7 @@ const animation = (cur_ball: Circle) => {
     }
 
     // if ball touches the paddle, reverse its direction
-    if (touches2(cur_ball, paddle)) {
+    if (touches(cur_ball, paddle)) {
         ball_x_increment = -ball_x_increment;
     }
  

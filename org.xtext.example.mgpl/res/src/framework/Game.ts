@@ -1,12 +1,16 @@
-import Ball from "./Ball.js";
+import Circle from "./Circle.js";
 import Rectangle from "./Rectangle.js";
+import Triangle from "./Triangle.js";
+import { instanceOfIMoveable } from "./IMoveable.js";
+import Shape2D from "./Shape2D.js";
 
 enum KeyBindings {
     UP = 38,
-    DOWN = 40
+    DOWN = 40,
+    LEFT = 37,
+    RIGHT = 39,
+    SPACE = 32
 }
-
-type GameObject = Ball | Rectangle
 
 export default class Game {
     private canvas: HTMLCanvasElement;
@@ -14,13 +18,16 @@ export default class Game {
     private width: number = window.innerWidth;
     private height: number = window.innerHeight;
     private keyPressed: boolean[];
-    private renderables: GameObject[];
+    private renderables: Shape2D[];
     private onArrowDown: () => void;
     private onArrowUp: () => void;
+    private keyEvents: {[index:string] : () => void};
 
     constructor(width: number, height: number) {
         this.width = width;
         this.height = height;
+        this.keyEvents = {};
+        this.keyPressed = [];
     }
 
     private createWorld() {
@@ -29,7 +36,6 @@ export default class Game {
         document.body.appendChild(this.canvas);
         this.canvas.height = this.height;
         this.canvas.width = this.width;
-        this.keyPressed = [];
         this.renderables = [];
     }
 
@@ -38,6 +44,10 @@ export default class Game {
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height); 
     }
 
+    public registerKeyEvent(keyType: string, callback: () => void ) {
+        console.log(this.keyEvents);
+        this.keyEvents[keyType] = callback;
+    }
     public registerOnArrowDown(onArrowDown: () => void){
        this.onArrowDown = onArrowDown;
     }
@@ -47,23 +57,26 @@ export default class Game {
 
     // gameloop
     private gameLoop(){
-        if(this.keyPressed[KeyBindings.UP]) {
-            this.onArrowUp();
-        }
-        if(this.keyPressed[KeyBindings.DOWN]) {
-            this.onArrowDown();
-        }
+        this.keyPressed.forEach((itemStatus, index) => {
+            if(itemStatus && this.keyEvents[KeyBindings[index]]) {
+                this.keyEvents[KeyBindings[index]]();
+            }
+        });
 
         // update moveables
         this.renderables.forEach(item => {
-            if (item instanceof Ball) {
-                item.move();   
+            if(instanceOfIMoveable(item)) {
+                item.move();
             }
         });
 
         // paint ball & rectangle
         this.paintBackground();
-        this.renderables.forEach(renderable => renderable.render(this.canvas, this.context));
+        this.renderables.
+            filter(item => item.visible === 1)
+            .forEach(renderable => renderable.render(this.canvas, this.context));
+        
+        // continue game loop
         requestAnimationFrame(() => this.gameLoop());
     }
 
@@ -77,7 +90,7 @@ export default class Game {
          });
     }
 
-    public init(renderables: GameObject[]) {
+    public init(renderables: Shape2D[]) {
         this.createWorld();
         this.setupKeyListener();
         this.renderables = renderables;

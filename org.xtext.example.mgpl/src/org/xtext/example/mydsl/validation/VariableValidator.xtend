@@ -8,6 +8,15 @@ import org.xtext.example.mydsl.mGPL.Prog
 class VariableValidator extends AbstractMGPLValidator {
 	
 	public static val DUPLICATE_NAME = 'duplicateName'
+	public static val UPPERCASE_NAME = 'invalidName'
+
+	@Check
+	def checkVarDeclLowercase(VarDecl varDecl) {
+		if (Character.isUpperCase(varDecl.name.charAt(0))) {
+			warning('Name should start with a lower case letter', MGPLPackage.Literals.DECL__NAME,
+				org.xtext.example.mydsl.validation.VariableValidator.UPPERCASE_NAME)
+		}
+	}
 
 	@Check
 	def checkVarDeclUniqueNames(VarDecl varDecl) {

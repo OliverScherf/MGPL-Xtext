@@ -4,13 +4,13 @@ generate mGPL "http://www.xtext.org/example/mydsl/MGPL"
 
 
 Prog :
-	 'game' name=ID '(' attrAssList=AttrAssList?  ')' decls+=Decl* stmtBlock=StmtBlock blocks+=Block*;
+	 'game' name=ID '(' attrAssList=AttrAssList?  ')' decls+=Decl* initBlock=InitBlock functions+=Block*;
 	 
 Decl :
 	VarDecl ';'  | ObjDecl ';';
 	
 VarDecl :
-	type='int' name=ID initVal=Init? | type='int' name=ID '[' value=INT ']';
+	type='int' name=ID initVal=Init? | type='int' name=ID '[' arrSize=INT ']';
 	
 Init :
 	'=' expr=Expr;
@@ -29,7 +29,7 @@ AttrAss :
 	name=ID '=' expr=Expr;
 	
 Block :
-	animBlock=AnimBlock | eventBlock=EventBlock;
+	AnimBlock | EventBlock;
 	
 AnimBlock :
 	'animation' name=ID '(' objType=OBJTYPE objName=ID ')' stmtBlock=StmtBlock;
@@ -40,11 +40,16 @@ EventBlock :
 terminal KEYSTROKE :
 	'space' | 'leftarrow' | 'rightarrow' | 'uparrow' | 'downarrow';
 	
+InitBlock:
+	{InitBlock} '{' stmts+=Stmt* '}'
+;
+	
 StmtBlock :
-	{StmtBlock} '{' stmts+=Stmt* '}';
+	'{' stmts+=Stmt* '}'
+;
 	
 Stmt :
-	ifStmt=IfStmt | forStmt=ForStmt | assStmt=AssStmt ';'
+	IfStmt | ForStmt | AssStmt ';'
 ;
 	
 IfStmt :

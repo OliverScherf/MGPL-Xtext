@@ -7,7 +7,7 @@ Prog :
 	 'game' name=ID '(' attrAssList=AttrAssList?  ')' decls+=Decl* stmtBlock=StmtBlock blocks+=Block*;
 	 
 Decl :
-	varDecl=VarDecl ';'  | ObjDecl ';';
+	VarDecl ';'  | ObjDecl ';';
 	
 VarDecl :
 	type='int' name=ID initVal=Init? | type='int' name=ID '[' value=INT ']';

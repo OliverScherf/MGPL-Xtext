@@ -1,6 +1,6 @@
-import Shape2D from "./Shape2D.js";
-import {Boundaries} from "./Types.js";
-import IMoveable from "./IMoveable.js";
+import Shape2D from "./Shape2D";
+import {Boundaries} from "./Types";
+import IMoveable from "./IMoveable";
 
 export default class Triangle extends Shape2D implements IMoveable {
 

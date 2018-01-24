@@ -1,9 +1,9 @@
-import Game from "./framework/Game.js";
-import Rectangle from "./framework/rectangle.js";
-import Triangle from "./framework/Triangle.js";
-import { touches } from "./framework/Collision.js";
-import Circle from "./framework/Circle.js";
-import {arrayOfN} from "./framework/Util.js";
+import Game from "./framework/Game";
+import Rectangle from "./framework/rectangle";
+import Triangle from "./framework/Triangle";
+import { touches } from "./framework/Collision";
+import Circle from "./framework/Circle";
+import {arrayOfN} from "./framework/Util";
 
 enum Pong {
     width = 400, 

@@ -9,6 +9,13 @@ import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
 import org.xtext.example.mydsl.mGPL.Prog
 import org.xtext.example.mydsl.mGPL.impl.ProgImpl
+import java.io.File
+import org.eclipse.core.runtime.FileLocator
+import java.net.URL
+import org.eclipse.emf.mwe.internal.core.Workflow
+import java.nio.file.Files
+import java.nio.file.StandardOpenOption
+import java.nio.file.StandardCopyOption
 
 /**
  * Generates code from your model files on save.
@@ -27,9 +34,16 @@ class MGPLGenerator extends AbstractGenerator {
 	MGPLNameProvider np = new MGPLNameProvider
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+		copyFramework(fsa)
 		val prog = resource.allContents.head as Prog
 		val code = generateProg(prog)
 		fsa.generateFile("output.js", code)
+	}
+	
+	private def copyFramework(IFileSystemAccess2 fsa) {
+		val resDir = new File(System.getenv("PARENT_LOC") + "/res/src/framework")
+		for (f : resDir.listFiles)
+			fsa.generateFile("framework/" + f.name, new String(Files.readAllBytes(f.toPath)))
 	}
 	
 	def generateProg(Prog p) {
@@ -42,9 +56,7 @@ class MGPLGenerator extends AbstractGenerator {
 		var «np.variableName(p)»
 		
 		(function («np.variableName(p)» {
-			«FOR attr : p.attrAssList.attrAssList»
-				«np.variableName(p)»[«np.variableName(p)»["«attr.attrAss.name»"] = «np.resolveExpression(attr.attrAss.expr)»] = "«attr.attrAss.name»";
-			«ENDFOR»
+			
 		}
 		'''
 	}

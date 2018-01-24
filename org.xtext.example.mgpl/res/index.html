@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Game</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    </head>
+    <style>
+        body {
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+    <body>
+            <script src="https://npmcdn.com/typescript@2.5.0/lib/typescript.js"></script>
+	        <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/0.19.39/system.js"></script>
+            <script>
+                System.config({
+                    transpiler: 'typescript',
+                    packages: {
+                        "framework": {
+                            "defaultExtension": "ts",
+                        }      
+                    }
+                });
+                System.import('game.ts')
+			        .then(function () {
+				        console.log('running');
+			        })
+			        .catch(function (err) {
+				        console.log(err);
+				        console.log(err.originalErr);
+                    });
+            </script>
+    </body>
+</html>

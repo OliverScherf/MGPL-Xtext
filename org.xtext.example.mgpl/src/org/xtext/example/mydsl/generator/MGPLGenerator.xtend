@@ -74,9 +74,13 @@ class MGPLGenerator extends AbstractGenerator {
 		«generateGame(p)»
 				
 		
-		// Forward declaration
+		// forward declaration
 		«FOR d : p.decls.filter[it instanceof ObjDecl].map[it as ObjDecl]»
-			let «d.name»: «np.type(d)» = «np.type(d)».produce;
+			«IF d.arrSize === 0»
+				let «d.name»: «np.type(d)» = «np.type(d)».produce;
+			«ELSE»
+				let «d.name»: «np.type(d)» = arrayOfN(«d.arrSize», «np.type(d)».produce);
+			«ENDIF»
 		«ENDFOR»
 		
 		// animations

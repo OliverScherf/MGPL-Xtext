@@ -85,14 +85,14 @@ AddExpr returns Expression:
 	MulExpr ({Operation.left=current} op=(ADD | Minus) right=MulExpr)*;
 
 MulExpr returns Expression:
-	UnExpr ({Operation.left=current} op=(MUL | DIV) right=UnExpr)*;
+	(UnExpr | Atom) ({Operation.left=current} op=(MUL | DIV) (right=UnExpr | right=Atom))*;
 
 UnExpr returns Expression:
-	op=(NOT | Minus)? atom=Atom;
+	{UnaryOperation} op=(NOT | Minus) right=Atom;
 	
-Atom :
+Atom returns Expression:
 	{IntLiteral} value=INT |
-	var=Var ({Operation.left=current} op='touches' touches += Var)? |
+	Var ({Operation.left=current} op='touches' touches += Var)? |
 	{ExprVar} '(' expr=Expr ')';
 
 // No terminal, context is needed to differ unary operations from add operations

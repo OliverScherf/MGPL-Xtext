@@ -3,19 +3,30 @@
  */
 package org.xtext.example.mydsl.generator
 
+import java.io.File
+import java.net.URL
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.nio.file.StandardOpenOption
+import org.eclipse.core.runtime.FileLocator
+import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.mwe.internal.core.Workflow
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
+import org.xtext.example.mydsl.mGPL.AnimBlock
+import org.xtext.example.mydsl.mGPL.AssStmt
+import org.xtext.example.mydsl.mGPL.AttrAss
+import org.xtext.example.mydsl.mGPL.Decl
+import org.xtext.example.mydsl.mGPL.ForStmt
+import org.xtext.example.mydsl.mGPL.IfStmt
+import org.xtext.example.mydsl.mGPL.ObjDecl
 import org.xtext.example.mydsl.mGPL.Prog
+import org.xtext.example.mydsl.mGPL.Stmt
+import org.xtext.example.mydsl.mGPL.VarDecl
 import org.xtext.example.mydsl.mGPL.impl.ProgImpl
-import java.io.File
-import org.eclipse.core.runtime.FileLocator
-import java.net.URL
-import org.eclipse.emf.mwe.internal.core.Workflow
-import java.nio.file.Files
-import java.nio.file.StandardOpenOption
-import java.nio.file.StandardCopyOption
+import org.xtext.example.mydsl.mGPL.EventBlock
 
 /**
  * Generates code from your model files on save.
@@ -24,40 +35,219 @@ import java.nio.file.StandardCopyOption
  */
 class MGPLGenerator extends AbstractGenerator {
 
-	/*
-	 * Kopiere Framework nach res/
-	 * Rectangle, Circle Klassen
-	 * KeyListener
-	 * animations in update Funktion generieren (callback an Framework)
-	 */
-
 	MGPLNameProvider np = new MGPLNameProvider
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		copyFramework(fsa)
 		val prog = resource.allContents.head as Prog
 		val code = generateProg(prog)
-		fsa.generateFile("output.js", code)
+		fsa.generateFile("game.ts", code)
 	}
 	
 	private def copyFramework(IFileSystemAccess2 fsa) {
-		val resDir = new File(System.getenv("PARENT_LOC") + "/res/src/framework")
+		val resDir = new File(System.getenv("PARENT_LOC") + "/res/framework")
+		val indexHtml = new File(System.getenv("PARENT_LOC") + "/res/index.html")
+		fsa.generateFile("index.html", new String(Files.readAllBytes(indexHtml.toPath)))
 		for (f : resDir.listFiles)
 			fsa.generateFile("framework/" + f.name, new String(Files.readAllBytes(f.toPath)))
 	}
 	
 	def generateProg(Prog p) {
 		'''
-		import Game from "./framework/Game.ts";
-		import Ball from "./framework/Ball.ts";
-		import Rectangle from "./framework/Rectangle.ts";
-		import { touches } from "./framework/Collision.ts";
+		import Game from "./framework/Game";
+		import Rectangle from "./framework/Rectangle";
+		import Triangle from "./framework/Triangle";
+		import { touches } from "./framework/Collision";
+		import Circle from "./framework/Circle";
+		import {arrayOfN} from "./framework/Util";
 		
-		var «np.variableName(p)»
+		enum «p.name» {
+			«generateAttrAssList(p)»
+		};
 		
-		(function («np.variableName(p)» {
-			
+		// global variables
+		«FOR d : p.decls.filter[it instanceof VarDecl].map[it as VarDecl]»
+			let «d.name»: «np.type(d)»«generateInitValue(d)»;
+		«ENDFOR»
+
+		//game object
+		«generateGame(p)»
+				
+		
+		// Forward declaration
+		«FOR d : p.decls.filter[it instanceof ObjDecl].map[it as ObjDecl]»
+			let «d.name»: «np.type(d)» = «np.type(d)».produce;
+		«ENDFOR»
+		
+		// animations
+		«FOR ab : p.functions.filter[it instanceof AnimBlock].map[it as AnimBlock]»
+			«generateAnimation(ab)»
+			 
+		«ENDFOR»
+		
+		// global objects
+		«FOR d : p.decls.filter[it instanceof ObjDecl].map[it as ObjDecl]»
+			«IF d.attrAssList !== null»
+				«d.name»«generateInitValue(d)»;
+				 
+		 	«ENDIF»
+		«ENDFOR»
+		
+		//init block
+		«IF p.initBlock !== null»
+			«FOR s : p.initBlock.stmts»
+			«generateStmt(s)»
+			«ENDFOR»
+		«ENDIF»
+		
+		// keyevents
+		«FOR k : p.functions.filter[it instanceof EventBlock].map[it as EventBlock]»
+			«generateKeyEvents(k)»
+			 
+		«ENDFOR»
+		
+		// start game
+		game.init([
+		«FOR d : p.decls.filter[it instanceof ObjDecl].map[it as ObjDecl] SEPARATOR ", "»
+			«IF d.arrSize !== 0»...«ENDIF»«d.name»
+		«ENDFOR»
+		]);
+		'''
+	}
+		
+	
+	def generateAttrAssList(Prog p) {
+		val at = p.attrAssList.attrAss
+		'''
+			width = «findAttribute(at, "w", "width")»,
+			height = «findAttribute(at, "h", "height")»,
+			x = «findAttribute(at, "x")»,
+			y = «findAttribute(at, "y")»,
+			speed = «findAttribute(at, "speed")»
+		'''
+	}
+		
+	def generateKeyEvents(EventBlock k) {
+	'''
+		game.registerKeyEvent('«np.keyName(k.keyEvent)»', () => {
+			«IF k.stmtBlock !== null»
+				«FOR s : k.stmtBlock.stmts»
+				«generateStmt(s)»
+				«ENDFOR»
+			«ENDIF»
+		});
+	'''	
+	}
+		
+	def generateAnimation(AnimBlock ab) {
+		'''
+		const «ab.name» = («ab.objName»: «np.type(ab.objType)») => {
+			«IF ab.stmtBlock !== null»
+				«FOR s : ab.stmtBlock.stmts»
+				«generateStmt(s)»
+				«ENDFOR»
+			«ENDIF»
 		}
 		'''
 	}
+		
+	def CharSequence generateStmt(Stmt s) {
+		if (s instanceof IfStmt) {
+			return generateIfStrm(s)
+		}
+		if (s instanceof AssStmt) {
+			return generateAssStmt(s)
+		}
+		if (s instanceof ForStmt) {
+			return generateForStmt(s)
+		} 
+		return ""
+	}
+	
+	def CharSequence generateAssStmt(AssStmt s) {
+		return '''«np.variableName(s.^var)» = «np.resolveExpression(s.expr)»;'''
+	}
+	
+		
+	def generateForStmt(ForStmt s) {
+		'''
+		for («generateAssStmt(s.initAssStmt)» «np.resolveExpression(s.cond)»; «generateAssStmt(s.afterthoughAssStmt)» {
+			«FOR st : s.stmtBlock.stmts»
+			«generateStmt(st)»
+			«ENDFOR»
+		}
+		'''
+	}
+	
+	def generateIfStrm(IfStmt s) {
+		'''
+		if («np.resolveExpression(s.cond)») {
+			«FOR trueS : s.trueStmtBlock.stmts»
+				«generateStmt(trueS)»
+			«ENDFOR»
+		}
+		«IF s.falseStmtBlock !== null»
+		else {
+			«FOR falseS : s.falseStmtBlock.stmts»
+				«generateStmt(falseS)»
+			«ENDFOR»
+		}
+		«ENDIF»
+		'''
+	}
+		
+	def generateGame(Prog p) {
+		val n = p.name
+		return '''const game: Game = new Game(«n».width, «n».height, «n».x, «n».y, «n».speed);'''
+	}
+		
+	def generateInitValue(Decl d) {
+
+		if (d instanceof VarDecl) {
+			if (d.arrSize !== 0) {
+				return '''[«d.arrSize»]'''
+			}
+			if (d.value !== null) {
+				return ''' = «np.resolveExpression(d.value.expr)»'''
+			}
+		} else if (d instanceof ObjDecl) {
+			if (d.arrSize !== 0) {
+				return '''= arrayOfN(«d.arrSize», «np.type(d)».produce)'''
+			}
+			if (d.attrAssList !== null) {
+				if (np.type(d) == np.RECTANGLE || np.type(d) == np.TRIANGLE) {
+					return 
+					'''
+					 = new «np.type(d)»(«findAttribute(d.attrAssList.attrAss, "x")»,
+					 								«findAttribute(d.attrAssList.attrAss, "y")»,
+					 								«findAttribute(d.attrAssList.attrAss, "w", "width")»,
+					 								«findAttribute(d.attrAssList.attrAss, "h", "height")»,
+					 								«findAttribute(d.attrAssList.attrAss, "visible")»,
+					 								«findAttribute(d.attrAssList.attrAss, "animation_block")»)'''
+				} else if (np.type(d) == np.CIRCLE) {
+					return 
+					'''
+					 = new «np.type(d)»(«findAttribute(d.attrAssList.attrAss, "x")»,
+					 								«findAttribute(d.attrAssList.attrAss, "y")»,
+					 								«findAttribute(d.attrAssList.attrAss, "radius")»,
+					 								«findAttribute(d.attrAssList.attrAss, "visible")»,
+					 								«findAttribute(d.attrAssList.attrAss, "animation_block")»)'''
+				}
+
+			}
+		}
+		return "";
+	}
+	
+	def findAttribute(EList<AttrAss> a, String... fields) {
+		var AttrAss ret;
+		for (f : fields) {
+			ret = a.findFirst[
+				it.name == f
+			]
+			if (ret !== null) return np.resolveExpression(ret.expr)
+		}
+		return "0"
+	}
+		
 }

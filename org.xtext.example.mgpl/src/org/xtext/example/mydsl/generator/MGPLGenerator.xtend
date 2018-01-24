@@ -173,7 +173,7 @@ class MGPLGenerator extends AbstractGenerator {
 	}
 	
 	def CharSequence generateAssStmtWithoutSemicolon(AssStmt s) {
-		return '''«np.variableName(s.^var)» = «np.resolveExpression(s.expr)»;'''
+		return '''«np.variableName(s.^var)» = «np.resolveExpression(s.expr)»'''
 	}
 	
 		

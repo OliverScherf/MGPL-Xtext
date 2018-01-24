@@ -7,6 +7,7 @@ import org.xtext.example.mydsl.mGPL.VarDecl
 import org.xtext.example.mydsl.mGPL.Decl
 import org.xtext.example.mydsl.mGPL.Operation
 import org.xtext.example.mydsl.mGPL.Var
+import org.xtext.example.mydsl.mGPL.UnaryOperation
 
 class MGPLNameProvider {
 
@@ -25,6 +26,9 @@ class MGPLNameProvider {
 		}
 		if (e instanceof IntLiteral) {
 			return String.valueOf(e.value)
+		}
+		if (e instanceof UnaryOperation) {
+			return e.op + resolveExpression(e.right)
 		}
 		if (e instanceof Var) {
 			var resolved = e.name;
@@ -48,15 +52,19 @@ class MGPLNameProvider {
 	}
 
 	def type(Decl d) {
-		if (d.type == 'int')
+		return type(d.type)
+	}
+	
+	def type(String d) {
+		if (d == 'int')
 			return NUMBER
-		if (d.type == 'rectangle')
+		if (d == 'rectangle')
 			return RECTANGLE
-		if (d.type == 'circle')
+		if (d == 'circle')
 			return CIRCLE
-		if (d.type == 'triangle')
+		if (d == 'triangle')
 			return TRIANGLE
-		throw new RuntimeException("Could not type Declaration " + d)
+		
 	}
 
 }

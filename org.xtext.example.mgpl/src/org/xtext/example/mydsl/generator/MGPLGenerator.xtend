@@ -3,24 +3,29 @@
  */
 package org.xtext.example.mydsl.generator
 
+import java.io.File
+import java.net.URL
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.nio.file.StandardOpenOption
+import org.eclipse.core.runtime.FileLocator
+import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.mwe.internal.core.Workflow
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import org.xtext.example.mydsl.mGPL.Prog
-import org.xtext.example.mydsl.mGPL.impl.ProgImpl
-import java.io.File
-import org.eclipse.core.runtime.FileLocator
-import java.net.URL
-import org.eclipse.emf.mwe.internal.core.Workflow
-import java.nio.file.Files
-import java.nio.file.StandardOpenOption
-import java.nio.file.StandardCopyOption
-import org.xtext.example.mydsl.mGPL.VarDecl
-import org.xtext.example.mydsl.mGPL.Decl
-import org.xtext.example.mydsl.mGPL.ObjDecl
-import org.eclipse.emf.common.util.EList
+import org.xtext.example.mydsl.mGPL.AnimBlock
+import org.xtext.example.mydsl.mGPL.AssStmt
 import org.xtext.example.mydsl.mGPL.AttrAss
+import org.xtext.example.mydsl.mGPL.Decl
+import org.xtext.example.mydsl.mGPL.ForStmt
+import org.xtext.example.mydsl.mGPL.IfStmt
+import org.xtext.example.mydsl.mGPL.ObjDecl
+import org.xtext.example.mydsl.mGPL.Prog
+import org.xtext.example.mydsl.mGPL.Stmt
+import org.xtext.example.mydsl.mGPL.VarDecl
+import org.xtext.example.mydsl.mGPL.impl.ProgImpl
 
 /**
  * Generates code from your model files on save.
@@ -91,10 +96,75 @@ class MGPLGenerator extends AbstractGenerator {
 		// global objects
 		«FOR d : p.decls.filter[it instanceof ObjDecl].map[it as ObjDecl]»
 			let «d.name»: «np.type(d)»«generateInitValue(d)»;
+			 
 		«ENDFOR»
 		
 		//game object
 		«generateGame(p)»
+		
+		// animations
+		«FOR ab : p.functions.filter[it instanceof AnimBlock].map[it as AnimBlock]»
+			«generateAnimation(ab)»
+			 
+		«ENDFOR»
+		
+		'''
+	}
+		
+	def generateAnimation(AnimBlock ab) {
+		'''
+		const «ab.name» = («ab.objName»: «np.type(ab.objType)») => {
+			«IF ab.stmtBlock !== null»
+				«FOR s : ab.stmtBlock.stmts»
+				«generateStmt(s)»
+				«ENDFOR»
+			«ENDIF»
+		}
+		'''
+	}
+		
+	def CharSequence generateStmt(Stmt s) {
+		if (s instanceof IfStmt) {
+			return generateIfStrm(s)
+		}
+		if (s instanceof AssStmt) {
+			return generateAssStmt(s)
+		}
+		if (s instanceof ForStmt) {
+			return generateForStmt(s)
+		} 
+		return ""
+	}
+	
+	def CharSequence generateAssStmt(AssStmt s) {
+		return '''«s.^var.name» = «np.resolveExpression(s.expr)»;'''
+	}
+	
+		
+	def generateForStmt(ForStmt s) {
+		'''
+		for («generateAssStmt(s.initAssStmt)» «np.resolveExpression(s.cond)»; «generateAssStmt(s.afterthoughAssStmt)» {
+			«FOR st : s.stmtBlock.stmts»
+			«generateStmt(st)»
+			«ENDFOR»
+		}
+		'''
+	}
+	
+	def generateIfStrm(IfStmt s) {
+		'''
+		if («np.resolveExpression(s.cond)») {
+			«FOR trueS : s.trueStmtBlock.stmts»
+				«generateStmt(trueS)»
+			«ENDFOR»
+		}
+		«IF s.falseStmtBlock !== null»
+		else {
+			«FOR falseS : s.falseStmtBlock.stmts»
+				«generateStmt(falseS)»
+			«ENDFOR»
+		}
+		«ENDIF»
 		'''
 	}
 		

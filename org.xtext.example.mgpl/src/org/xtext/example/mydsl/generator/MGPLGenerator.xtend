@@ -71,10 +71,13 @@ class MGPLGenerator extends AbstractGenerator {
 		
 	
 	def generateAttrAssList(Prog p) {
+		val at = p.attrAssList.attrAss
 		'''
-		«FOR a : p.attrAssList.attrAss SEPARATOR ','»
-		 «a.name» = «np.resolveExpression(a.expr)»
-		«ENDFOR» 
+			width = «findAttribute(at, "w", "width")»,
+			height = «findAttribute(at, "h", "height")»,
+			x = «findAttribute(at, "x")»,
+			y = «findAttribute(at, "y")»,
+			speed = «findAttribute(at, "speed")»
 		'''
 	}
 	
@@ -89,7 +92,15 @@ class MGPLGenerator extends AbstractGenerator {
 		«FOR d : p.decls.filter[it instanceof ObjDecl].map[it as ObjDecl]»
 			let «d.name»: «np.type(d)»«generateInitValue(d)»;
 		«ENDFOR»
+		
+		//game object
+		«generateGame(p)»
 		'''
+	}
+		
+	def generateGame(Prog p) {
+		val n = p.name
+		return '''const game: Game = new Game(«n».width, «n».height, «n».x, «n».y, «n».speed);'''
 	}
 		
 	def generateInitValue(Decl d) {

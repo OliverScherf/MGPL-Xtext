@@ -26,6 +26,15 @@ class MGPLNameProvider {
 			name += '''[«resolveExpression(v.varArray.indexExpr)»]'''
 		}
 		if(v.varProp !== null) {
+			if (v.varProp.objProp == 'w') {
+				return name + "width"
+			}
+			if (v.varProp.objProp == 'h') {
+				return name + "height"
+			}
+			if (v.varProp.objProp == 'r') {
+				return name + "radius"
+			}
 			name += '''.«v.varProp.objProp»'''
 		}
 		return name

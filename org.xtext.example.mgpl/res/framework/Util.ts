@@ -1,4 +1,4 @@
-import Shape2D from "./Shape2D.js";
+import Shape2D from "./Shape2D";
 
 export function arrayOfN<T>(n: number, produceFunc: () => T): T[] {
     let arr: T[] = [];

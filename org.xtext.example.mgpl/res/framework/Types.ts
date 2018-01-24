@@ -1,6 +1,6 @@
-import Circle from "./Circle.js";
-import Rectangle from "./Rectangle.js";
-import Triangle from "./Triangle.js";
+import Circle from "./Circle";
+import Rectangle from "./Rectangle";
+import Triangle from "./Triangle";
 
 
 export type Boundaries = {

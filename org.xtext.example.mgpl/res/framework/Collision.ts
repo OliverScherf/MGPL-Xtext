@@ -1,7 +1,7 @@
-import Circle from "./Circle.js";
-import Rectangle from "./Rectangle.js";
-import Triangle from "./Triangle.js";
-import { CollisionObject, Boundaries } from './Types.js';
+import Circle from "./Circle";
+import Rectangle from "./Rectangle";
+import Triangle from "./Triangle";
+import { CollisionObject, Boundaries } from './Types';
 
 export function touches(a: CollisionObject, b: CollisionObject): boolean {
     const aDim = a.getBoundaries();

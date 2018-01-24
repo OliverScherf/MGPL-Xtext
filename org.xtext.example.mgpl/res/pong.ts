@@ -1,7 +1,7 @@
-import Game from "./framework/Game.js";
-import Rectangle from "./framework/Rectangle.js";
-import { touches } from "./framework/Collision.js";
-import Circle from "./framework/Circle.js";
+import Game from "./framework/Game";
+import Rectangle from "./framework/Rectangle";
+import { touches } from "./framework/Collision";
+import Circle from "./framework/Circle";
 
 enum Pong {
     width = 400, 
@@ -16,8 +16,7 @@ const paddle_width: number = 5;
 const paddle_height: number = 40;
 const ball_size: number = 10;
 
-const game: Game = new Game(Pong.width, Pong.height, Pong.speed);
-
+const game: Game = new Game(Pong.width, Pong.height, 0,0, Pong.speed);
 // create paddle
 const paddle: Rectangle = new Rectangle(Pong.width / 10, Pong.height /2, paddle_width, paddle_height);
 

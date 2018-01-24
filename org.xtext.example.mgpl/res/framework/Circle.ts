@@ -1,6 +1,6 @@
-import Shape2D from "./Shape2D.js";
-import IMoveable from "./IMoveable.js";
-import {Boundaries} from "./Types.js";
+import Shape2D from "./Shape2D";
+import IMoveable from "./IMoveable";
+import {Boundaries} from "./Types";
 
 export default class Circle extends Shape2D implements IMoveable {
 

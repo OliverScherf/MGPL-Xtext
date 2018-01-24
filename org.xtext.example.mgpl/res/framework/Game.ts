@@ -1,8 +1,8 @@
-import Circle from "./Circle.js";
-import Rectangle from "./Rectangle.js";
-import Triangle from "./Triangle.js";
-import { instanceOfIMoveable } from "./IMoveable.js";
-import Shape2D from "./Shape2D.js";
+import Circle from "./Circle";
+import Rectangle from "./Rectangle";
+import Triangle from "./Triangle";
+import { instanceOfIMoveable } from "./IMoveable";
+import Shape2D from "./Shape2D";
 
 enum KeyBindings {
     UP = 38,
@@ -78,7 +78,6 @@ export default class Game {
         this.renderables.
             filter(item => item.visible === 1)
             .forEach(renderable => renderable.render(this.canvas, this.context));
-        
         // continue game loop
         setTimeout(() => {
             requestAnimationFrame(() => this.gameLoop());

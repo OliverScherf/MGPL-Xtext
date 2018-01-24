@@ -19,17 +19,17 @@ class BindingValidator extends AbstractMGPLValidator {
 
 	@Check
 	def checkVariableDeclared(Var v) {
-		if (isAnimation(v)) {
+		if (ASTHelper.isAnimation(v)) {
 			return
 		}
-		if (isParameter(v)) {
+		if (ASTHelper.isParameter(v)) {
 			return
 		}
-		if(isProg(v)) {
+		if(ASTHelper.isProg(v)) {
 			return
 		}
 
-		val decl = findVarDecl(v)
+		val decl = ASTHelper.findVarDecl(v)
 		if (decl === null) {
 			error('''The Variable «v.name» does not exists''', MGPLPackage.Literals.VAR__NAME, VARIABLE_NOT_DECLARED)
 			return
@@ -41,7 +41,7 @@ class BindingValidator extends AbstractMGPLValidator {
 		if (v.varArray === null) {
 			return;
 		}
-		val decl = findVarDecl(v)
+		val decl = ASTHelper.findVarDecl(v)
 		if (decl.arrSize == 0) {
 			error('''The Variable «v.name» was not declared as array''', MGPLPackage.Literals.VAR__NAME, VARIABLE_NOT_DECLARED)
 		}
@@ -50,19 +50,19 @@ class BindingValidator extends AbstractMGPLValidator {
 	@Check
 	def checkAnimationBlockBinding(AttrAss a) {
 		// check if attribute is animation_block
-		if(!isAnimBlockProperty(a)) {
+		if(!ASTHelper.isAnimBlockProperty(a)) {
 			return;
 		}
 		
 		// find parent object if exists
-		val parentObjDecl = findParentObjectDeclarationRecursively(a, a.eContainer);
+		val parentObjDecl = ASTHelper.findParentObjectDeclarationRecursively(a, a.eContainer);
 		if(parentObjDecl === null) {
 			return;
 		}
 		
 		val isAnimBlockValue = a.expr as Var;
 		// find animation with same name as animationBlockValue and check if types mismatch
-		val sameNameMisMatchBlocks = findAnimations(a, [e | return e.name == isAnimBlockValue.name  && e.objType != parentObjDecl.type])
+		val sameNameMisMatchBlocks = ASTHelper.findAnimations(a, [e | return e.name == isAnimBlockValue.name  && e.objType != parentObjDecl.type])
 		val element = sameNameMisMatchBlocks.head;
 		if(element === null) {
 			return;
@@ -70,69 +70,6 @@ class BindingValidator extends AbstractMGPLValidator {
 		error('''The type of animation_block «element.name» mismatches''', MGPLPackage.Literals.ATTR_ASS__NAME, ANIMATION_BLOCK_TYPE_MISMATCH);
 		 
 		
-	}
-	
-	private def isProg(Var v) {
-		val prog = v.eResource.allContents.head as Prog
-		if (prog.name.equals(v.name)) {
-			return true
-		}
-	}
-	
-	private def isAnimBlockProperty(AttrAss a) {
-		return a.name == "animation_block";
-	}
-
-	private def findVarDecl(Var v) {
-		val prog = v.eResource.allContents.head as Prog
-		return prog.decls.findFirst [
-			name.equals(v.name)
-		]
-	}
-
-	private def isParameter(Var v) {
-		val container = v.eContainer
-		return isParameterRecursively(v, container)
-	}
-	
-	private def ObjDecl findParentObjectDeclarationRecursively(AttrAss a, EObject container) {
-		if (container === null) {
-			return null;
-		}
-		if (container instanceof ObjDecl) {
-			return container;
-		}
-		return findParentObjectDeclarationRecursively(a, container.eContainer)
-	}
-	
-	private def boolean isParameterRecursively(Var v, EObject container) {
-		if (container === null) {
-			return false;
-		}
-		if (container instanceof AnimBlock) {
-			return container.objName.equals(v.name)
-		}
-		return isParameterRecursively(v, container.eContainer)
-	}
-
-	private def isAnimation(Var v) {
-		val prog = v.eResource.allContents.head as Prog
-		return prog.functions.filter [
-			it instanceof AnimBlock
-		].map [
-			it as AnimBlock
-		].exists [
-			name.equals(v.name)
-		]
-	}
-	
-	private def findAnimations(EObject o, Function1<AnimBlock, Boolean> f) {
-		val prog = o.eResource.allContents.head as Prog
-		return prog.functions.filter [
-			it instanceof AnimBlock
-		].map [
-			it as AnimBlock
-		].filter(f)
 	}
 
 }

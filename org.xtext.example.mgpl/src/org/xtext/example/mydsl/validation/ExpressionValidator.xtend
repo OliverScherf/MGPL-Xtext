@@ -16,51 +16,43 @@ class ExpressionValidator extends AbstractMGPLValidator {
 
 	public static val NOT_GRAPHICAL_OBJECT = 'notGraphicalObject'
 	public static val TOUCHES_OP = 'touches'
+	public static val TYPE_INT = 'int'
 	public static val GRAPHICAL_OBJECTS  = #['rectangle', 'triangle', 'circle']
 
 	@Check
 	def checkTouchesObjects(Operation o) {
-		if(o.op != TOUCHES_OP) {
-			return;
-		}
 		// get operands as vars
 		val operand1 = o.left as Var;
 		val operand2 = o.right as Var;
 		
 		// get type of first operand
-		var var1DeclType = "";
-		if(ASTHelper.isParameter(operand1)) {
-			var1DeclType = ASTHelper.findParameterTypeRecursively(operand1, operand1.eContainer);
-		} else {
-			val var1Decl = ASTHelper.findVarDecl(operand1);
-			if(var1Decl !== null) {
-				var1DeclType = var1Decl.type;
-			}
-		}
-		
+		var var1DeclType = ASTHelper.getTypeOfVariable(operand1);
 		// get type of second operand
-		var var2DeclType = "";
-		if(ASTHelper.isParameter(operand2)) {
-			var2DeclType = ASTHelper.findParameterTypeRecursively(operand2, operand2.eContainer);
-		} else {
-			val var2Decl = ASTHelper.findVarDecl(operand2);
-			if(var2Decl !== null) {
-				var2DeclType = var2Decl.type;
-			}	
-		}
+		var var2DeclType = ASTHelper.getTypeOfVariable(operand2);
 		
 		if(var1DeclType === "" || var1DeclType === "") {
 			return; 
 		}
-		val valid1 = GRAPHICAL_OBJECTS.contains(var1DeclType);
-		val valid2 = GRAPHICAL_OBJECTS.contains(var2DeclType);
 		
-		if(!valid1) {
-			error('''Operands of touches must be graphical objects''', MGPLPackage.Literals.OPERATION__LEFT, NOT_GRAPHICAL_OBJECT);
+		if(o.op == TOUCHES_OP) {
+			val valid1 = GRAPHICAL_OBJECTS.contains(var1DeclType);
+			val valid2 = GRAPHICAL_OBJECTS.contains(var2DeclType);
+			
+			if(!valid1) {
+				error('''Operands of touches must be graphical objects''', MGPLPackage.Literals.OPERATION__LEFT, NOT_GRAPHICAL_OBJECT);
+			}
+			if(!valid2) {
+				error('''Operands of touches must be graphical objects''', MGPLPackage.Literals.OPERATION__RIGHT, NOT_GRAPHICAL_OBJECT);
+			}
+		} else {
+			if(var1DeclType != TYPE_INT) {
+				error('''Operands of must be of type int''', MGPLPackage.Literals.OPERATION__LEFT, NOT_GRAPHICAL_OBJECT);
+			}
+			if(var2DeclType != TYPE_INT) {
+				error('''Operands of must be of type int''', MGPLPackage.Literals.OPERATION__RIGHT, NOT_GRAPHICAL_OBJECT);
+			}
 		}
-		if(!valid2) {
-			error('''Operands of touches must be graphical objects''', MGPLPackage.Literals.OPERATION__RIGHT, NOT_GRAPHICAL_OBJECT);
-		}
+		
 		
 	}
 

@@ -94,4 +94,23 @@ class ASTHelper extends AbstractMGPLValidator {
 		].filter(f)
 	}
 	
+	public static def String getTypeOfVariable(Var v) {
+		// return int if varprop like ".x" and not a animation block
+		if(v.varProp != null && !(v.varProp instanceof AnimBlock)) {
+			return 'int';
+		}
+		
+		// search in decls and animation block parameters
+		var declType = "";
+		if(ASTHelper.isParameter(v)) {
+			declType = ASTHelper.findParameterTypeRecursively(v, v.eContainer);
+		} else {
+			val declaration = ASTHelper.findVarDecl(v);
+			if(declaration !== null) {
+				declType = declaration.type;
+			}	
+		}
+		return declType;
+	}
+	
 }

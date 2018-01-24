@@ -10,13 +10,13 @@ export default class Triangle extends Shape2D implements IMoveable {
     static color: string = '#000';
 
     static produce() {
-        return new Triangle(0,0,0,0, () => {});
+        return new Triangle(0,0,0,0, 1, () => {});
     }
 
     animate: (r: Triangle) => void
 
-    constructor(x: number, y:number, width: number, height: number, handler: (r: Triangle) => void = () => {}) {
-        super(x,y);
+    constructor(x: number, y:number, width: number, height: number, visible: number, handler: (r: Triangle) => void = () => {}) {
+        super(x,y, visible);
         this.width = width;
         this.height = height;
         this.animate = handler;

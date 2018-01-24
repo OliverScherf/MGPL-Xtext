@@ -7,12 +7,12 @@ export default class Circle extends Shape2D implements IMoveable {
     public radius: number;
 
     static produce() {
-        return new Circle(0, 0, 0, () => {});
+        return new Circle(0, 0, 0, 1, () => {});
     }
     animate: (c:Circle) => void
 
-    constructor(x: number, y:number, radius: number, handler: (b: Circle) => void) {
-        super(x,y);
+    constructor(x: number, y:number, radius: number, visible: number, handler: (b: Circle) => void) {
+        super(x,y,visible);
         this.radius = radius;
         this.animate = handler;
     }

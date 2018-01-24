@@ -7,7 +7,7 @@ export default class Shape2D {
         return new Shape2D(0,0);        
     }
 
-    constructor(x: number, y:number) {
+    constructor(x: number, y:number, visible: number = 1) {
         this.x = x;
         this.y = y;
         this.visible = 1;

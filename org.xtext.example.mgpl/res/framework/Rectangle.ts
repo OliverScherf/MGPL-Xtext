@@ -11,11 +11,11 @@ export default class Rectangle extends Shape2D implements IMoveable {
     static color: string = '#000';
 
     static produce() {
-        return new Rectangle(0,0,0,0, () => {});
+        return new Rectangle(0,0,0,0,1,() => {});
     }
 
-    constructor(x: number, y:number, width: number, height: number, handler: (r: Rectangle) => void = () => {}) {
-        super(x,y);
+    constructor(x: number, y:number, width: number, height: number, visible: number, handler: (r: Rectangle) => void = () => {}) {
+        super(x,y, visible);
         this.width = width;
         this.height = height;
         this.animate = handler;

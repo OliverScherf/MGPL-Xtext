@@ -116,7 +116,17 @@ class MGPLGenerator extends AbstractGenerator {
 					 = new «np.type(d)»(«findAttribute(d.attrAssList.attrAss, "x")»,
 					 								«findAttribute(d.attrAssList.attrAss, "y")»,
 					 								«findAttribute(d.attrAssList.attrAss, "w", "width")»,
-					 								«findAttribute(d.attrAssList.attrAss, "h", "height")»)'''
+					 								«findAttribute(d.attrAssList.attrAss, "h", "height")»,
+					 								«findAttribute(d.attrAssList.attrAss, "visible")»,
+					 								«findAttribute(d.attrAssList.attrAss, "animation_block")»)'''
+				} else if (np.type(d) == np.CIRCLE) {
+					return 
+					'''
+					 = new «np.type(d)»(«findAttribute(d.attrAssList.attrAss, "x")»,
+					 								«findAttribute(d.attrAssList.attrAss, "y")»,
+					 								«findAttribute(d.attrAssList.attrAss, "radius")»,
+					 								«findAttribute(d.attrAssList.attrAss, "visible")»,
+					 								«findAttribute(d.attrAssList.attrAss, "animation_block")»)'''
 				}
 
 			}

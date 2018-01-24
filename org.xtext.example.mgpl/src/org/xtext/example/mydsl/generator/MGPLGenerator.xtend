@@ -26,6 +26,7 @@ import org.xtext.example.mydsl.mGPL.Prog
 import org.xtext.example.mydsl.mGPL.Stmt
 import org.xtext.example.mydsl.mGPL.VarDecl
 import org.xtext.example.mydsl.mGPL.impl.ProgImpl
+import org.xtext.example.mydsl.mGPL.EventBlock
 
 /**
  * Generates code from your model files on save.
@@ -34,43 +35,83 @@ import org.xtext.example.mydsl.mGPL.impl.ProgImpl
  */
 class MGPLGenerator extends AbstractGenerator {
 
-	/*
-	 * Kopiere Framework nach res/
-	 * Rectangle, Circle Klassen
-	 * KeyListener
-	 * animations in update Funktion generieren (callback an Framework)
-	 */
-
 	MGPLNameProvider np = new MGPLNameProvider
 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		copyFramework(fsa)
 		val prog = resource.allContents.head as Prog
 		val code = generateProg(prog)
-		fsa.generateFile(prog.name + ".ts", code)
+		fsa.generateFile("game.ts", code)
 	}
 	
 	private def copyFramework(IFileSystemAccess2 fsa) {
-		val resDir = new File(System.getenv("PARENT_LOC") + "/res/src/framework")
+		val resDir = new File(System.getenv("PARENT_LOC") + "/res/framework")
+		val indexHtml = new File(System.getenv("PARENT_LOC") + "/res/index.html")
+		fsa.generateFile("index.html", new String(Files.readAllBytes(indexHtml.toPath)))
 		for (f : resDir.listFiles)
 			fsa.generateFile("framework/" + f.name, new String(Files.readAllBytes(f.toPath)))
 	}
 	
 	def generateProg(Prog p) {
 		'''
-		import Game from "./framework/Game.js";
-		import Rectangle from "./framework/rectangle.js";
-		import Triangle from "./framework/Triangle.js";
-		import { touches } from "./framework/Collision.js";
-		import Circle from "./framework/Circle.js";
-		import {arrayOfN} from "./framework/Util.js";
+		import Game from "./framework/Game";
+		import Rectangle from "./framework/Rectangle";
+		import Triangle from "./framework/Triangle";
+		import { touches } from "./framework/Collision";
+		import Circle from "./framework/Circle";
+		import {arrayOfN} from "./framework/Util";
 		
 		enum «p.name» {
 			«generateAttrAssList(p)»
-		}
+		};
+		
+		// global variables
+		«FOR d : p.decls.filter[it instanceof VarDecl].map[it as VarDecl]»
+			let «d.name»: «np.type(d)»«generateInitValue(d)»;
+		«ENDFOR»
 
-		«generateGlobalVariables(p)»
-
+		//game object
+		«generateGame(p)»
+				
+		
+		// Forward declaration
+		«FOR d : p.decls.filter[it instanceof ObjDecl].map[it as ObjDecl]»
+			let «d.name»: «np.type(d)» = «np.type(d)».produce;
+		«ENDFOR»
+		
+		// animations
+		«FOR ab : p.functions.filter[it instanceof AnimBlock].map[it as AnimBlock]»
+			«generateAnimation(ab)»
+			 
+		«ENDFOR»
+		
+		// global objects
+		«FOR d : p.decls.filter[it instanceof ObjDecl].map[it as ObjDecl]»
+			«IF d.attrAssList !== null»
+				«d.name»«generateInitValue(d)»;
+				 
+		 	«ENDIF»
+		«ENDFOR»
+		
+		//init block
+		«IF p.initBlock !== null»
+			«FOR s : p.initBlock.stmts»
+			«generateStmt(s)»
+			«ENDFOR»
+		«ENDIF»
+		
+		// keyevents
+		«FOR k : p.functions.filter[it instanceof EventBlock].map[it as EventBlock]»
+			«generateKeyEvents(k)»
+			 
+		«ENDFOR»
+		
+		// start game
+		game.init([
+		«FOR d : p.decls.filter[it instanceof ObjDecl].map[it as ObjDecl] SEPARATOR ", "»
+			«IF d.arrSize !== 0»...«ENDIF»«d.name»
+		«ENDFOR»
+		]);
 		'''
 	}
 		
@@ -85,29 +126,17 @@ class MGPLGenerator extends AbstractGenerator {
 			speed = «findAttribute(at, "speed")»
 		'''
 	}
-	
-	def generateGlobalVariables(Prog p) {
-		'''
-		// global variables
-		«FOR d : p.decls.filter[it instanceof VarDecl].map[it as VarDecl]»
-			let «d.name»: «np.type(d)»«generateInitValue(d)»;
-		«ENDFOR»
 		
-		// global objects
-		«FOR d : p.decls.filter[it instanceof ObjDecl].map[it as ObjDecl]»
-			let «d.name»: «np.type(d)»«generateInitValue(d)»;
-			 
-		«ENDFOR»
-		
-		//game object
-		«generateGame(p)»
-		
-		// animations
-		«FOR ab : p.functions.filter[it instanceof AnimBlock].map[it as AnimBlock]»
-			«generateAnimation(ab)»
-			 
-		«ENDFOR»
-		'''
+	def generateKeyEvents(EventBlock k) {
+	'''
+		game.registerKeyEvent('«np.keyName(k.keyEvent)»', () => {
+			«IF k.stmtBlock !== null»
+				«FOR s : k.stmtBlock.stmts»
+				«generateStmt(s)»
+				«ENDFOR»
+			«ENDIF»
+		});
+	'''	
 	}
 		
 	def generateAnimation(AnimBlock ab) {
@@ -136,7 +165,7 @@ class MGPLGenerator extends AbstractGenerator {
 	}
 	
 	def CharSequence generateAssStmt(AssStmt s) {
-		return '''«s.^var.name» = «np.resolveExpression(s.expr)»;'''
+		return '''«np.variableName(s.^var)» = «np.resolveExpression(s.expr)»;'''
 	}
 	
 		

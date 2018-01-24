@@ -19,6 +19,17 @@ class MGPLNameProvider {
 	def variableName(Prog p) {
 		return p.name
 	}
+	
+	def variableName(Var v) {
+		var name = v.name;
+		if(v.varArray !== null) {
+			name += '''[«resolveExpression(v.varArray.indexExpr)»]'''
+		}
+		if(v.varProp !== null) {
+			name += '''.«v.varProp.objProp»'''
+		}
+		return name
+	}
 
 	def String resolveExpression(Expression e) {
 		if (e === null) {
@@ -69,6 +80,15 @@ class MGPLNameProvider {
 		if (d == 'triangle')
 			return TRIANGLE
 		
+	}
+	
+	def keyName(String k) {
+		if (k == 'space') return "SPACE"
+		if (k == 'leftarrow') return "LEFT"
+		if (k == 'rightarrow') return "RIGHT"
+		if (k == 'uparrow') return "UP"
+		if (k ==  'downarrow') return "DOWN"
+		return "unknown"
 	}
 
 }

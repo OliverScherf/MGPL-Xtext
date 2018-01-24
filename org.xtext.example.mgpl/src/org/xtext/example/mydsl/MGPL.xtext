@@ -62,14 +62,16 @@ AssStmt :
 	var=Var '=' expr=Expr;
 
 Var :
-	name=ID (varProp=VarProp | varArray=VarArray)?;
+	name=ID varArray=VarArray? varProp=VarProp?
+;
+
 
 VarProp:
 	'.' objProp=ID 
 ;
 
 VarArray:
-	'[' indexExpr=Expr ']' varProp=VarProp?
+	'[' indexExpr=Expr ']'
 ;
 
 Expr returns Expression:

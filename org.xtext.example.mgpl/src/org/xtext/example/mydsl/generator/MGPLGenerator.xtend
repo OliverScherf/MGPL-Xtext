@@ -16,6 +16,11 @@ import org.eclipse.emf.mwe.internal.core.Workflow
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 import java.nio.file.StandardCopyOption
+import org.xtext.example.mydsl.mGPL.VarDecl
+import org.xtext.example.mydsl.mGPL.Decl
+import org.xtext.example.mydsl.mGPL.ObjDecl
+import org.eclipse.emf.common.util.EList
+import org.xtext.example.mydsl.mGPL.AttrAss
 
 /**
  * Generates code from your model files on save.
@@ -37,7 +42,7 @@ class MGPLGenerator extends AbstractGenerator {
 		copyFramework(fsa)
 		val prog = resource.allContents.head as Prog
 		val code = generateProg(prog)
-		fsa.generateFile("output.js", code)
+		fsa.generateFile(prog.name + ".ts", code)
 	}
 	
 	private def copyFramework(IFileSystemAccess2 fsa) {
@@ -48,16 +53,75 @@ class MGPLGenerator extends AbstractGenerator {
 	
 	def generateProg(Prog p) {
 		'''
-		import Game from "./framework/Game.ts";
-		import Ball from "./framework/Ball.ts";
-		import Rectangle from "./framework/Rectangle.ts";
-		import { touches } from "./framework/Collision.ts";
+		import Game from "./framework/Game.js";
+		import Rectangle from "./framework/rectangle.js";
+		import Triangle from "./framework/Triangle.js";
+		import { touches } from "./framework/Collision.js";
+		import Circle from "./framework/Circle.js";
+		import {arrayOfN} from "./framework/Util.js";
 		
-		var «np.variableName(p)»
-		
-		(function («np.variableName(p)» {
-			
+		enum «p.name» {
+			«generateAttrAssList(p)»
 		}
+
+		«generateGlobalVariables(p)»
+
 		'''
 	}
+		
+	
+	def generateAttrAssList(Prog p) {
+		'''
+		«FOR a : p.attrAssList.attrAss SEPARATOR ','»
+		 «a.name» = «np.resolveExpression(a.expr)»
+		«ENDFOR» 
+		'''
+	}
+	
+	def generateGlobalVariables(Prog p) {
+		'''
+		// global variables
+		«FOR d : p.decls.filter[it instanceof VarDecl].map[it as VarDecl]»
+			let «d.name»: «np.type(d)»«generateInitValue(d)»;
+		«ENDFOR»
+		
+		// global objects
+		«FOR d : p.decls.filter[it instanceof ObjDecl].map[it as ObjDecl]»
+			let «d.name»: «np.type(d)»«generateInitValue(d)»;
+		«ENDFOR»
+		'''
+	}
+		
+	def generateInitValue(Decl d) {
+		if (d instanceof VarDecl) {
+			if (d.value !== null) {
+				return ''' = «np.resolveExpression(d.value.expr)»'''
+			}
+		} else if (d instanceof ObjDecl) {
+			if (d.attrAssList !== null) {
+				if (np.type(d) == np.RECTANGLE || np.type(d) == np.TRIANGLE) {
+					return 
+					'''
+					 = new «np.type(d)»(«findAttribute(d.attrAssList.attrAss, "x")»,
+					 								«findAttribute(d.attrAssList.attrAss, "y")»,
+					 								«findAttribute(d.attrAssList.attrAss, "w", "width")»,
+					 								«findAttribute(d.attrAssList.attrAss, "h", "height")»)'''
+				}
+
+			}
+		}
+		return "";
+	}
+	
+	def findAttribute(EList<AttrAss> a, String... fields) {
+		var AttrAss ret;
+		for (f : fields) {
+			ret = a.findFirst[
+				it.name == f
+			]
+			if (ret !== null) return np.resolveExpression(ret.expr)
+		}
+		return "0"
+	}
+		
 }

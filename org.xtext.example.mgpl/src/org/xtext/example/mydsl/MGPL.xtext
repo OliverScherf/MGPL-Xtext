@@ -10,7 +10,7 @@ Decl :
 	VarDecl ';'  | ObjDecl ';';
 	
 VarDecl :
-	type='int' name=ID initVal=Init? | type='int' name=ID '[' arrSize=INT ']';
+	type='int' name=ID value=Init? | type='int' name=ID '[' arrSize=INT ']';
 	
 Init :
 	'=' expr=Expr;

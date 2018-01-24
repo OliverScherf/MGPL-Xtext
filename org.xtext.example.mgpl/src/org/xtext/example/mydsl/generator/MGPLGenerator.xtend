@@ -172,10 +172,14 @@ class MGPLGenerator extends AbstractGenerator {
 		return '''«np.variableName(s.^var)» = «np.resolveExpression(s.expr)»;'''
 	}
 	
+	def CharSequence generateAssStmtWithoutSemicolon(AssStmt s) {
+		return '''«np.variableName(s.^var)» = «np.resolveExpression(s.expr)»;'''
+	}
+	
 		
 	def generateForStmt(ForStmt s) {
 		'''
-		for («generateAssStmt(s.initAssStmt)» «np.resolveExpression(s.cond)»; «generateAssStmt(s.afterthoughAssStmt)») {
+		for («generateAssStmt(s.initAssStmt)» «np.resolveExpression(s.cond)»; «generateAssStmtWithoutSemicolon(s.afterthoughAssStmt)») {
 			«FOR st : s.stmtBlock.stmts»
 			«generateStmt(st)»
 			«ENDFOR»

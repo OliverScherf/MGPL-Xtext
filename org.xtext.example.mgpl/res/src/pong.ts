@@ -6,7 +6,7 @@ import Circle from "./framework/Circle.js";
 enum Pong {
     width = 400, 
     height = 300, 
-    speed = 95
+    speed = 100
 };
 
 const paddle_increment: number = 10;
@@ -16,7 +16,7 @@ const paddle_width: number = 5;
 const paddle_height: number = 40;
 const ball_size: number = 10;
 
-const game: Game = new Game(Pong.width, Pong.height);
+const game: Game = new Game(Pong.width, Pong.height, Pong.speed);
 
 // create paddle
 const paddle: Rectangle = new Rectangle(Pong.width / 10, Pong.height /2, paddle_width, paddle_height);

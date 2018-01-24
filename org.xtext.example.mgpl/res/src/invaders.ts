@@ -14,8 +14,8 @@ enum Pong {
 enum Invaders {
     width = 500, 
     height = 500,
-    x = 300, //unused 
-    y = 200, //unused 
+    x = 300,
+    y = 200,
     speed = 100
 }
 
@@ -26,7 +26,7 @@ let counter: number = 0;
 let i: number;
 
 
-const game: Game = new Game(Invaders.width, Invaders.height);
+const game: Game = new Game(Invaders.width, Invaders.height, Invaders.x, Invaders.y, Invaders.speed);
 
 // aliens
 const aliens = arrayOfN(10, Circle.produce);

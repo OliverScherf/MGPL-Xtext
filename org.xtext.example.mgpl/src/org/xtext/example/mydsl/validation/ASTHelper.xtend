@@ -60,6 +60,19 @@ class ASTHelper extends AbstractMGPLValidator {
 		}
 		return isParameterRecursively(v, container.eContainer)
 	}
+	
+	public static def String findParameterTypeRecursively(Var v, EObject container) {
+		if (container === null) {
+			return "";
+		}
+		if (container instanceof AnimBlock) {
+			if(container.objName.equals(v.name)) {
+				return container.objType;
+			}
+			return "";
+		}
+		return findParameterTypeRecursively(v, container.eContainer)
+	}
 
 	public static def isAnimation(Var v) {
 		val prog = v.eResource.allContents.head as Prog

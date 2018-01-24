@@ -23,21 +23,44 @@ class ExpressionValidator extends AbstractMGPLValidator {
 		if(o.op != TOUCHES_OP) {
 			return;
 		}
+		// get operands as vars
 		val operand1 = o.left as Var;
 		val operand2 = o.right as Var;
 		
+		// get type of first operand
+		var var1DeclType = "";
+		if(ASTHelper.isParameter(operand1)) {
+			var1DeclType = ASTHelper.findParameterTypeRecursively(operand1, operand1.eContainer);
+		} else {
+			val var1Decl = ASTHelper.findVarDecl(operand1);
+			if(var1Decl !== null) {
+				var1DeclType = var1Decl.type;
+			}
+		}
 		
-		val var1Decl = ASTHelper.findVarDecl(operand1);
+		// get type of second operand
+		var var2DeclType = "";
+		if(ASTHelper.isParameter(operand2)) {
+			var2DeclType = ASTHelper.findParameterTypeRecursively(operand2, operand2.eContainer);
+		} else {
+			val var2Decl = ASTHelper.findVarDecl(operand2);
+			if(var2Decl !== null) {
+				var2DeclType = var2Decl.type;
+			}	
+		}
 		
-		println(var1Decl.name);
-		return;
-		/*if(var1Decl === null || var2Decl === null) {
+		if(var1DeclType === "" || var1DeclType === "") {
 			return; 
 		}
-		val check = GRAPHICAL_OBJECTS.contains(var1Decl.type) && GRAPHICAL_OBJECTS.contains(var2Decl.type);
-		if(!check) {
-			error('''Operands of touches «operand1.name» and «operand2.name» must be graphical objects''', MGPLPackage.Literals.VAR__NAME, NOT_GRAPHICAL_OBJECT);
-		}*/ 
+		val valid1 = GRAPHICAL_OBJECTS.contains(var1DeclType);
+		val valid2 = GRAPHICAL_OBJECTS.contains(var2DeclType);
+		
+		if(!valid1) {
+			error('''Operands of touches must be graphical objects''', MGPLPackage.Literals.OPERATION__LEFT, NOT_GRAPHICAL_OBJECT);
+		}
+		if(!valid2) {
+			error('''Operands of touches must be graphical objects''', MGPLPackage.Literals.OPERATION__RIGHT, NOT_GRAPHICAL_OBJECT);
+		}
 		
 	}
 

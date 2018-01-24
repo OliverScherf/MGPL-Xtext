@@ -92,7 +92,7 @@ UnExpr returns Expression:
 	
 Atom returns Expression:
 	{IntLiteral} value=INT |
-	Var ({Operation.left=current} op='touches' touches += Var)? |
+	Var ({Operation.left=current} op='touches' right = Var)? |
 	{ExprVar} '(' expr=Expr ')';
 
 // No terminal, context is needed to differ unary operations from add operations

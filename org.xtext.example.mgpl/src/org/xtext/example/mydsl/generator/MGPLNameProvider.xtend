@@ -35,6 +35,9 @@ class MGPLNameProvider {
 			if (v.varProp.objProp == 'r') {
 				return name + ".radius"
 			}
+			if (v.varProp.objProp == 'animation_block') {
+				return name + ".animate"
+			}
 			name += '''.«v.varProp.objProp»'''
 		}
 		return name
@@ -51,16 +54,7 @@ class MGPLNameProvider {
 			return e.op + resolveExpression(e.right)
 		}
 		if (e instanceof Var) {
-			var resolved = e.name;
-			// check if its an array access
-			if (e.varArray !== null) {
-				resolved += '''[«resolveExpression(e.varArray.indexExpr)»]'''			
-			}
-			// check if its an property access
-			if (e.varProp !== null) {
-				resolved += '''.«e.varProp.objProp»'''
-			}
-			return resolved
+			return variableName(e)
 		}
 		
 		// call resolveExpression recursevly with left and right

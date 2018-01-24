@@ -45,7 +45,11 @@ class MGPLNameProvider {
 		
 		// call resolveExpression recursevly with left and right
 		if (e instanceof Operation) {
-			return resolveExpression(e.left) + e?.op + resolveExpression(e.right)
+			if (e.op == "touches") {
+				return '''touches(«resolveExpression(e.left)», «resolveExpression(e.right)»)'''				
+			} else {
+				return resolveExpression(e.left) + e?.op + resolveExpression(e.right)
+			}
 		}
 		
 		return "unknown"

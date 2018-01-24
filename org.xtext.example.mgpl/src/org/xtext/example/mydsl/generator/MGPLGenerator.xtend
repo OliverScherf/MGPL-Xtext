@@ -107,7 +107,6 @@ class MGPLGenerator extends AbstractGenerator {
 			«generateAnimation(ab)»
 			 
 		«ENDFOR»
-		
 		'''
 	}
 		
@@ -174,11 +173,18 @@ class MGPLGenerator extends AbstractGenerator {
 	}
 		
 	def generateInitValue(Decl d) {
+
 		if (d instanceof VarDecl) {
+			if (d.arrSize !== 0) {
+				return '''[«d.arrSize»]'''
+			}
 			if (d.value !== null) {
 				return ''' = «np.resolveExpression(d.value.expr)»'''
 			}
 		} else if (d instanceof ObjDecl) {
+			if (d.arrSize !== 0) {
+				return '''= arrayOfN(«d.arrSize», «np.type(d)».produce)'''
+			}
 			if (d.attrAssList !== null) {
 				if (np.type(d) == np.RECTANGLE || np.type(d) == np.TRIANGLE) {
 					return 

@@ -27,13 +27,13 @@ class MGPLNameProvider {
 		}
 		if(v.varProp !== null) {
 			if (v.varProp.objProp == 'w') {
-				return name + "width"
+				return name + ".width"
 			}
 			if (v.varProp.objProp == 'h') {
-				return name + "height"
+				return name + ".height"
 			}
 			if (v.varProp.objProp == 'r') {
-				return name + "radius"
+				return name + ".radius"
 			}
 			name += '''.«v.varProp.objProp»'''
 		}

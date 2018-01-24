@@ -171,7 +171,7 @@ class MGPLGenerator extends AbstractGenerator {
 		
 	def generateForStmt(ForStmt s) {
 		'''
-		for («generateAssStmt(s.initAssStmt)» «np.resolveExpression(s.cond)»; «generateAssStmt(s.afterthoughAssStmt)» {
+		for («generateAssStmt(s.initAssStmt)» «np.resolveExpression(s.cond)»; «generateAssStmt(s.afterthoughAssStmt)») {
 			«FOR st : s.stmtBlock.stmts»
 			«generateStmt(st)»
 			«ENDFOR»
@@ -247,7 +247,7 @@ class MGPLGenerator extends AbstractGenerator {
 			]
 			if (ret !== null) return np.resolveExpression(ret.expr)
 		}
-		return "0"
+		return "undefined"
 	}
 		
 }

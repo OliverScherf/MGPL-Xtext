@@ -49,7 +49,7 @@ export default class Game {
     }
 
     private paintBackground() {
-        this.context.fillStyle = '#779';
+        this.context.fillStyle = '#000';
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height); 
     }
 

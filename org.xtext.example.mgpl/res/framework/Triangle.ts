@@ -7,7 +7,7 @@ export default class Triangle extends Shape2D implements IMoveable {
     public width: number;
     public height: number;
 
-    static color: string = '#000';
+    static color: string = '#fff';
 
     static produce() {
         return new Triangle(0,0,0,0, 1, () => {});

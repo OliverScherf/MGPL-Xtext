@@ -8,7 +8,7 @@ export default class Rectangle extends Shape2D implements IMoveable {
     public height: number;
     animate: (r: Rectangle) => void
 
-    static color: string = '#000';
+    static color: string = '#fff';
 
     static produce() {
         return new Rectangle(0,0,0,0,1,() => {});

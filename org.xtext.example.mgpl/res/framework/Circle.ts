@@ -17,7 +17,7 @@ export default class Circle extends Shape2D implements IMoveable {
         this.animate = handler;
     }
 
-    static color: string = 'red';
+    static color: string = '#fff';
 
     public render(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = Circle.color;

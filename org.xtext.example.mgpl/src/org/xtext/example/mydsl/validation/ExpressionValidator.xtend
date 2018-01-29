@@ -11,6 +11,8 @@ import org.xtext.example.mydsl.mGPL.ObjDecl
 import org.xtext.example.mydsl.mGPL.AttrAss
 import org.eclipse.xtext.xbase.lib.Functions.Function1
 import org.xtext.example.mydsl.mGPL.Operation
+import org.xtext.example.mydsl.mGPL.IntLiteral
+import com.ibm.icu.impl.locale.InternalLocaleBuilder
 
 class ExpressionValidator extends AbstractMGPLValidator {
 
@@ -21,14 +23,25 @@ class ExpressionValidator extends AbstractMGPLValidator {
 
 	@Check
 	def checkTouchesObjects(Operation o) {
-		// get operands as vars
-		val operand1 = o.left as Var;
-		val operand2 = o.right as Var;
+		var var1DeclType = "";
+		var var2DeclType = "";
+	
+
+		if(o.left instanceof IntLiteral || o.left instanceof Operation) {
+			var1DeclType = TYPE_INT;
+		}
+		else {
+			val operand1 = o.left as Var;
+			var1DeclType = ASTHelper.getTypeOfVariable(operand1);
+		}
 		
-		// get type of first operand
-		var var1DeclType = ASTHelper.getTypeOfVariable(operand1);
-		// get type of second operand
-		var var2DeclType = ASTHelper.getTypeOfVariable(operand2);
+		if(o.right instanceof IntLiteral || o.right instanceof Operation) {
+			var2DeclType = TYPE_INT;
+		} 
+		else {
+			val operand2 = o.right as Var;
+			var2DeclType = ASTHelper.getTypeOfVariable(operand2);
+		}
 		
 		if(var1DeclType === "" || var1DeclType === "") {
 			return; 
@@ -49,10 +62,10 @@ class ExpressionValidator extends AbstractMGPLValidator {
 				error('''Operands of must be of type int''', MGPLPackage.Literals.OPERATION__LEFT, NOT_GRAPHICAL_OBJECT);
 			}
 			if(var2DeclType != TYPE_INT) {
+				println(var2DeclType);
 				error('''Operands of must be of type int''', MGPLPackage.Literals.OPERATION__RIGHT, NOT_GRAPHICAL_OBJECT);
 			}
 		}
-		
 		
 	}
 

@@ -33,7 +33,7 @@ class AttributeValidator extends AbstractMGPLValidator {
 			}
 			if(attributeName == "speed") {				
 				val speed = it.expr as IntLiteral;
-				if(speed.value < 0 || speed.value >= 100) {
+				if(speed.value < 0 || speed.value > 100) {
 					error('''Speed Attribute has to be an int between 0 and 100''', it, MGPLPackage.Literals.ATTR_ASS__EXPR, INVALID_SPEED);
 				}
 			}

@@ -31,7 +31,7 @@ export default class Game {
         this.height = height;
         this.keyEvents = {};
         this.keyPressed = [];
-        this.gameSpeed = gameSpeed > 0 ? gameSpeed : 0;
+        this.gameSpeed = gameSpeed > 0 ? gameSpeed : 1;
         this.windowX = windowX;
         this.windowY = windowY;
     }

@@ -39,6 +39,7 @@ Workflow {
 			validator = {
 				composedCheck = "org.xtext.example.mydsl.validation.VariableValidator"
 				composedCheck = "org.xtext.example.mydsl.validation.BindingValidator"
+				composedCheck = "org.xtext.example.mydsl.validation.AttributeValidator"
 				composedCheck = "org.xtext.example.mydsl.validation.ExpressionValidator"
 			}
 		}

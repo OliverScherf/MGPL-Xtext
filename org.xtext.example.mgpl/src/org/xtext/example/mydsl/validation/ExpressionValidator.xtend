@@ -62,7 +62,6 @@ class ExpressionValidator extends AbstractMGPLValidator {
 				error('''Operands of must be of type int''', MGPLPackage.Literals.OPERATION__LEFT, NOT_GRAPHICAL_OBJECT);
 			}
 			if(var2DeclType != TYPE_INT) {
-				println(var2DeclType);
 				error('''Operands of must be of type int''', MGPLPackage.Literals.OPERATION__RIGHT, NOT_GRAPHICAL_OBJECT);
 			}
 		}
